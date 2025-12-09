@@ -41,10 +41,12 @@ class Enrolls extends Controller
             // "address1" => trim($_POST['address1']),
             // "address2" => trim($_POST['addess2']),
             // "city" => trim(ucfirst(strtolower($_POST['city']))),
+            "email" => trim(strtolower($_POST['email'])),
             "state" => strtoupper(trim($_POST['state'] ?? '')),
             "zipcode" => $_POST['zipcode'],
             "url" => $full_url,
-            "utms"=>$utms
+            "utms"=>$utms,
+            "powered"=>$_POST['powered']
             
           ];
 
@@ -55,7 +57,25 @@ class Enrolls extends Controller
   }
 
   public function redirect(){
-    $this->view('enrolls/redirect');
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      $full_url = $_POST['url'];
+      parse_str(parse_url($full_url, PHP_URL_QUERY), $params);
+      $utms = json_encode($params);
+      $data = [
+        "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
+        "second_name" => trim(ucfirst(strtolower($_POST['lastname']))),
+        "state" => strtoupper(trim($_POST['state'] ?? '')),
+        "zipcode" => $_POST['zipcode'],
+        "email" => trim(strtolower($_POST['email'])),
+        "url" => $full_url,
+        "utms"=>$utms,
+        "ETC"=>$_POST['powered'],
+        "company"=>"True Wireless"
+            
+      ];
+      $this->enrollModel->saveData($data,'lifeline_records');
+      $this->view('enrolls/redirect',$data);
+    }
   }
 
   public function ca()
@@ -94,7 +114,7 @@ class Enrolls extends Controller
     $flea = ($data['email']) ? strtoupper(substr($data['email'], 0, 1)) : "X";
     $num = str_pad($lastId, 4, '0', STR_PAD_LEFT);
 
-    $customerId = "G-" . $flfn . $flsn . $fdpn . $flea . $num;
+    $customerId = "TW-" . $flfn . $flsn . $fdpn . $flea . $num;
 
     return $customerId;
   }
@@ -104,8 +124,9 @@ class Enrolls extends Controller
     //$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $full_url = $_POST['url'];
-        parse_str(parse_url($full_url, PHP_URL_QUERY), $params);
-        $utms = json_encode($params);
+      //echo parse_url($full_url, PHP_URL_QUERY);
+      parse_str(parse_url($full_url, PHP_URL_QUERY)?? '', $params);
+      $utms = json_encode($params);
       $data = [
         "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
         "second_name" => trim(ucfirst(strtolower($_POST['lastname']))),
@@ -122,23 +143,26 @@ class Enrolls extends Controller
       //$data['ambtstates']=$AMBTstates;
       
       $TWStates = $this->enrollModel->getStates('GTW');
+
+      $NALStates = $this->enrollModel->getStates('NAL');
       //print_r($states);
       //$data['twstates']=$TWStates;
       //exit();
       if (in_array($data['state'], $TWStates)) {
-        $data['message']="redirect";
-      } else if (in_array($data['state'], $AMBTstates)) {
+        $data['powered']="GTW";
+      } else if (in_array($data['state'], $NALstates)) {
         //$this->view('enrolls/index',$data);
-        $data['message']="success";
+        $data['powered']="NAL";
+      }else if (in_array($data['state'], $AMBTstates)) {
+        //$this->view('enrolls/index',$data);
+        $data['powered']="AMBT";
       }
       
       if($data['state']=="TX"){
           $twzipcodes = $this->enrollModel->getZipcodes('GTW');
           if(in_array($data['zipcode'],$twzipcodes)){
             //redirect('enrolls/redirect');
-            $data['message']="redirect";
-          }else{
-            $data['message']="success";
+            $data['powered']="GTW";
           }
         }
       echo json_encode($data);

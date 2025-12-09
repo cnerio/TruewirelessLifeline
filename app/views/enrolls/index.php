@@ -5,6 +5,7 @@ require APPROOT . '/views/inc/header.php';
 ?>
 <?php 
 $apply=false;
+$powered=$data['powered'] ?? '';
 require APPROOT . '/views/inc/navbar.php'; 
 
 if(isset($data)){
@@ -96,7 +97,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="email">Email <span class="requiredmark">*</span></label>
-                                        <input type="text" id="email" name="email" class="form-control">
+                                        <input type="text" id="email" name="email" class="form-control" <?php if(isset($data)){echo ($data['email'])?"value='".$data['email']."' readonly":"";} ?>>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -322,7 +323,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                     </div>
                                 </div>
                             <input type="hidden" id="url" name="url" value="<?php echo $full_url; ?>">
-                            <input type="hidden" id="company" name="company" value="GALAXY">
+                            <input type="hidden" id="company" name="company" value="True Wireless">
                             <input type="hidden" id="utm_source" name="utm_source" value="<?php echo $utm_source; ?>">
                             <input type="hidden" id="utm_medium" name="utm_medium" value="<?php echo $utm_medium; ?>">
                             <input type="hidden" id="utm_campaign" name="utm_campaign" value="<?php echo $utm_campaign; ?>">
@@ -331,6 +332,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                             <input type="hidden" id="utm_adgroup" name="utm_adgroup" value="<?php echo $utm_adgroup; ?>">
                             <input type="hidden" id="gclid" name="gclid" value="<?php echo $gclid; ?>">
                             <input type="hidden" id="fbclid" name="fbclid" value="<?php echo $fbclid; ?>">
+                            <input type="hidden" id="powered" name="powered" value="<?php echo $data['powered'] ?? ''; ?>">
                         </section>
 
                         <h3>Eligibility</h3>

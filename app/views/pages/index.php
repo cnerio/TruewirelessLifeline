@@ -8,6 +8,7 @@ $full_url = $protocol . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 require APPROOT . '/views/inc/header.php'; ?>
 <?php
 $apply = true;
+$powered = '';
 require APPROOT . '/views/inc/navbar.php';
 ?>
 
@@ -57,7 +58,7 @@ require APPROOT . '/views/inc/navbar.php';
 </section>
 <section class="py-4 py-xl-5">
     <div class="container">
-        <div class="text-white bg-primary border rounded border-0 border-primary d-flex flex-column justify-content-between flex-lg-row p-4 p-md-5">
+        <div class="text-white bg-black border rounded border-0 border-black d-flex flex-column justify-content-between flex-lg-row p-4 p-md-5">
             <div class="pb-2 pb-lg-1">
                 <h2 class="fw-bold text-secondary mb-2"> Do you receive government benefits?</h2>
                 <p class="mb-0">Just fill out this enrollment form.</p>
@@ -96,20 +97,20 @@ require APPROOT . '/views/inc/navbar.php';
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row pt-2">
+                    <div class="row pt-2">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="address1">Street Address <span class="requiredmark">*</span></label>
-                                <input type="text" id="address1" name="address1" class="form-control">
+                                <label for="email">Email <span class="requiredmark">*</span></label>
+                                <input type="text" id="email" name="email" class="form-control">
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <!-- <div class="col-md-6">
                             <div class="form-group">
                                 <label for="address2">Apartment or Unit Number</label>
                                 <input type="text" id="address2" name="addess2" class="form-control">
                             </div>
-                        </div>
-                    </div> -->
+                        </div> -->
+                    </div>
                     <div class="row">
                         <!-- <div class="col-md-4">
                             <div class="form-group">
@@ -193,6 +194,7 @@ require APPROOT . '/views/inc/navbar.php';
                     <input type="hidden" id="url" name="url" value="<?php echo $full_url;?>">
                     <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
                     <button id="submitform" type="Submit" class="btn btn-primary" value="">Check</button>
+                    <input type="hidden" id="powered" name="powered" value="">
                     <div id="response"></div>
                 </div>
             </form>
@@ -224,12 +226,9 @@ require APPROOT . '/views/inc/navbar.php';
                 lastname: {
                     required: true
                 },
-                address1: {
-                    required: true
-                },
-                city: {
-                    required: true
-
+                email: {
+                    required: true,
+                    email: true
                 },
                 state: {
                     required: true
@@ -289,10 +288,14 @@ $("#submitform").on("click",function(event){
                 
                 resObj = JSON.parse(response);
                 //console.log(resObj)
-                if(resObj.message=="success"){
+                $("#powered").val(resObj.powered);
+                if(resObj.powered=="GTW"){
+                    
+                    //window.location.href ="<?php //echo URLROOT;?>/enrolls/redirect";
+                     form.attr('action', "<?php echo URLROOT;?>/enrolls/redirect");
+                     form.submit();
+                }else{
                     form.submit();
-                }else if(resObj.message=="redirect"){
-                    window.location.href ="<?php echo URLROOT;?>/enrolls/redirect";
                 }
             },
             error: function(xhr, status, error) {

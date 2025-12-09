@@ -16,6 +16,6 @@
   // URL Root
   define('URLROOT', $GLOBALS["urlroot"]);
   // Site Name
-  define('SITENAME', 'Galaxy Lifeline');
+  define('SITENAME', 'Truewireless Lifeline');
   // App Version
   define('APPVERSION', '1.0.0');

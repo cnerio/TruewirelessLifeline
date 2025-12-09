@@ -110,6 +110,9 @@ class Enroll {
             case "GTW":
                 $query = "SELECT abrv FROM lifeline_states WHERE GTW=1;";
                 break;
+            case "NAL":
+                $query = "SELECT abrv FROM lifeline_states WHERE GTW=1;";
+                break;
         }
         $this->db->query($query);
         $response = $this->db->resultSet();

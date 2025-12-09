@@ -3,8 +3,13 @@
     <div class="container">
         <!-- <a class="navbar-brand d-flex align-items-center" href="/"> -->
         <a class="navbar-brand">
-            <h2 class="fw-hold text-bold mb-0">Galaxy Lifeline</h2>
-            <p style="font-size:9px;"><small>Powered by American Broadband + Telecommunication</small></p>
+        <figure class="figure mb-0">
+            <img class="img-fluid" style="width:auto;height:60px;" src="<?php echo URLROOT; ?>/public/img/logo.png" alt="">
+            <figcaption>
+                <?php if($powered=="AMBT"){ echo "Powered by American Broadband + Telecommunication"; }else if($powered=="NAL"){echo "Powered by National Relief Telecom";} ?></figcaption>
+        </figure>
+            <!-- <h2 class="fw-hold text-bold mb-0">Tr</h2>
+            <p style="font-size:9px;"><small>Powered by American Broadband + Telecommunication</small></p> -->
         </a>
         <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navcol-1">
             <span class="visually-hidden">Toggle navigation</span><span class="navbar-toggler-icon"></span>
@@ -13,8 +18,8 @@
             <ul class="navbar-nav ms-auto">
                 <li class="nav-item"></li> 
                 <li class="nav-item" style="text-align: right;">
-                    <a class="nav-link active pb-0" target="_blank" href="mailto:support@galaxylifeline.com">support@galaxylifeline.com <i class="fa fa-envelope"></i></a>
-                    <a class="nav-link active pt-0" target="_blank" href="tel:+18333345566" style="font-family: sans-serif;">(833) 334-5566 <i class="fa fa-phone-square"></i></a>
+                    <a class="nav-link active pb-0" target="_blank" href="mailto:info@gotruewireless.com">info@GoTrueWireless.com <i class="fa fa-envelope"></i></a>
+                    <a class="nav-link active pt-0" target="_blank" href="tel:+18337338524" style="font-family: sans-serif;">(833) 733-8524 <i class="fa fa-phone-square"></i></a>
                 </li> 
                 <!-- <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>

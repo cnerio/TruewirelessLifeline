@@ -1,6 +1,7 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
 <?php 
 $apply=false;
+$powered="GTW";
 require APPROOT . '/views/inc/navbar.php'; 
 ?>
 
@@ -22,7 +23,8 @@ require APPROOT . '/views/inc/navbar.php';
 </div>
 <script>
     let seconds = 5;
-    const targetUrl = "https://gotruewireless.com/Signup.php"; // 🔗 change this to your URL
+    //const targetUrl = "https://gotruewireless.com/Signup.php"; // https://demo-truewireless-web.telgoo5.com🔗 change this to your URL
+    const targetUrl = "https://demo-truewireless-web.telgoo5.com/Signup.php?tg_agent_id=&email_id=<?php echo trim($data['email']) ?>&zip_code=<?php echo trim($data['zipcode']) ?>"; // 🔗 change this to your URL
     const countEl = document.getElementById("count");
 
     const timer = setInterval(() => {

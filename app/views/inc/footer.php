@@ -3,11 +3,11 @@
      <div class="row justify-content-center">
                 <div class="col-lg-10 col-md-12 pt-3 pb-3">
                     <p class="legal-text"><span class="legal-span">*DISCLAIMER: Lifeline is a government assistance program. Only eligible consumers may enroll in Lifeline. Lifeline service is non-transferable and limited to one discount per household. Lifeline services are provided by our trusted partner American Broadband and Telecomunications “AMBT”. Availability is limited to select states and specific zip&nbsp;codes.</span> </p>
-                    <p class="legal-text"><span class="legal-span">Galaxy Distribution, Inc. “Galaxy” is powered by “AMBT” Company , a recognized service provider of Lifeline services. “AMBT” has engaged and supervises Surge to provide prospective beneficiaries enrollment services and customer support to qualified residents. Galaxy operates the galaxylifeline.com website. All references to Galaxy herein shall refer to "Galaxy Distribution, powered by AMBT”.</span> </p>
+                    <p class="legal-text"><span class="legal-span">True Wireless Inc. "True Wireless" is powered by “AMBT” Company , a recognized service provider of Lifeline services. “AMBT” has engaged and supervises Surge to provide prospective beneficiaries enrollment services and customer support to qualified residents. True Wireless operates the lifeline.truewireless.com website. All references to True Wirelss herein shall refer to "True Wireless, powered by AMBT”.</span> </p>
                     <p class="legal-text"><span class="legal-span">Completion of this form is required. This form is used for the purpose of verifying your eligibility for and enrolling you in Lifeline benefits and an eligible “AMBT” service plan and will not be used for any other purpose. LifeLine benefits are subject to verification of eligibility by the National Verifier and/or a Third-Party Administrator “TPA”.<br></span></p>
-                    <p class="legal-text"><span class="legal-span">Lifeline services are subject to availability and AMBT’s <a target="_BLANK" href="https://galaxylifeline.com/Ambt/terms" alt="americanassistance">Terms and Conditions</a> and Policies are available at <a target="_BLANK" href="https://galaxylifeline.com/Ambt/privacy" alt="americanassistance">Here</a>.</span> </p>
+                    <p class="legal-text"><span class="legal-span">Lifeline services are subject to availability and AMBT’s <a target="_BLANK" href="https://gotruewireless.com/TermsConditions.php" alt="americanassistance">Terms and Conditions</a> and Policies are available at <a target="_BLANK" href="https://www.gotruewireless.com/PrivacyPolicy.php" alt="americanassistance">Here</a>.</span> </p>
                     <!-- <p class="legal-text"><span class="legal-span">Requires 5G/4G LTE Unlocked AT&amp;T Compatible Phone.</span></p> -->
-                    <p class="legal-text"><span class="legal-span">Galaxy Lifeline are wholly owned subsidiaries of Galaxy Distribution.</span></p>
+                    <p class="legal-text"><span class="legal-span">True Wireless are wholly owned subsidiaries of Galaxy Distribution.</span></p>
 
                 </div>
 
@@ -15,9 +15,9 @@
     <div class="container py-4 py-lg-5">
        
         <div class="text-muted d-flex justify-content-between align-items-center pt-3">
-            <p class="mb-0">Copyright © 2025 Galaxy Distribution | <a href="https://galaxylifeline.com/Ambt/privacy" target="_blank" rel="noopener noreferrer nofollow">
+            <p class="mb-0">Copyright © 2025 True Wireless | <a href="https://www.gotruewireless.com/PrivacyPolicy.php" target="_blank" rel="noopener noreferrer nofollow">
   Privacy Policy
-</a> | <a href="https://galaxylifeline.com/Ambt/terms" target="_blank" rel="noopener noreferrer nofollow">
+</a> | <a href="https://gotruewireless.com/TermsConditions.php" target="_blank" rel="noopener noreferrer nofollow">
   Terms of Service
 </a></p>
             <ul class="list-inline mb-0">
