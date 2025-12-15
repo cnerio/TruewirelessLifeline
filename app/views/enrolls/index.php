@@ -309,7 +309,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                             </div>
                             <div class="row mt-3">
                                     <div class="col-md-12" style="text-align: right;">
-                                        <div id="recaptcha" class="g-recaptcha" style="display: inline-block" data-sitekey="6LeNtMcrAAAAAJDYPHZO6if3mF_0bUv1Ls0_-24E"></div>
+                                        <div id="recaptcha" class="g-recaptcha" style="display: inline-block" data-sitekey="6LeVbyYsAAAAAOhmjaZxzq7vA6v25kD6FwIywZ6c"></div>
                                     </div>
                                     <div class="col-md-12" style="text-align: right;"> 
                                         <span class="msg-error error"></span>

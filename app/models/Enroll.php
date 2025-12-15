@@ -66,15 +66,17 @@ class Enroll {
 
     }
 
-    public function getCredentials(){
-         $this->db->query('SELECT * FROM clec_credentials where active = 1;');
+    public function getCredentials($company){
+         $this->db->query('SELECT * FROM clec_credentials where active = 1 AND company= :company;');
+            $this->db->bind(":company",$company);
             $result = $this->db->resultSet();
 
             return $result;
     }
 
-    public function getPackages(){
-        $this->db->query("SELECT * FROM packages WHERE active=1;");
+    public function getPackages($company){
+        $this->db->query("SELECT * FROM packages WHERE active=1 and etc=:company;");
+        $this->db->bind(":company",$company);
         $result = $this->db->resultSet();
         return $result;
     }
@@ -111,7 +113,7 @@ class Enroll {
                 $query = "SELECT abrv FROM lifeline_states WHERE GTW=1;";
                 break;
             case "NAL":
-                $query = "SELECT abrv FROM lifeline_states WHERE GTW=1;";
+                $query = "SELECT abrv FROM lifeline_states WHERE NAL=1;";
                 break;
         }
         $this->db->query($query);

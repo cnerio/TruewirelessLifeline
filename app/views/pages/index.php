@@ -287,8 +287,9 @@ $("#submitform").on("click",function(event){
                 //$("#response").html(response);
                 
                 resObj = JSON.parse(response);
-                //console.log(resObj)
+                console.log(resObj)
                 $("#powered").val(resObj.powered);
+                exit();
                 if(resObj.powered=="GTW"){
                     
                     //window.location.href ="<?php //echo URLROOT;?>/enrolls/redirect";

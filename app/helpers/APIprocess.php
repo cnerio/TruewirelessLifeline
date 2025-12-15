@@ -9,10 +9,14 @@ Class APIprocess{
         $customerData = $enrollModel->getCustomerData($customerId);
        
         if($customerData && $customerData[0]['customer_id']){
+
+        if($customerData[0]['ETC'] && $customerData[0]['ETC']!=""){
+          $company=$customerData[0]['ETC'];
+        }
          
-        $credentials=$enrollModel->getCredentials();
+        $credentials=$enrollModel->getCredentials($company);
         $processData['customer_id']=$customerId;
-        $packages = $enrollModel->getPackages();
+        $packages = $enrollModel->getPackages($company);
     
         $createResponse=create_shockwave_account($customerData[0],$credentials[0],$packages);
         $processData['process_status']="addSubscriberOrder API";
@@ -57,7 +61,7 @@ Class APIprocess{
                  "type_doc"=>"Consent"
                ];
                $enrollModel->saveData($fileData,'lifeline_documents');
-              $ConsentFileResult = $this->sendDocuments($customerId,$row[0]['order_id'],"Consent",$enrollModel);
+              $ConsentFileResult = $this->sendDocuments($customerId,$row[0]['order_id'],"Consent",$enrollModel,$company);
               $processData['process_status']=$ConsentFileResult['msg'];
               $enrollModel->updateData($processData,'lifeline_records');
                 $result=[
@@ -78,7 +82,7 @@ Class APIprocess{
               $checkId = $this->getSavedfiles($customerId,$enrollModel,'ID');
               if($checkId){
                 //echo "GET FILE";
-                $IdFileResult = $this->sendDocuments($customerId,$row[0]['order_id'],"ID",$enrollModel);
+                $IdFileResult = $this->sendDocuments($customerId,$row[0]['order_id'],"ID",$enrollModel,$company);
                 $processData['process_status']=$IdFileResult['msg'];
                 $enrollModel->updateData($processData,'lifeline_records');
               }
@@ -86,7 +90,7 @@ Class APIprocess{
               $checkPOB = $this->getSavedfiles($customerId,$enrollModel,'POB');
               if($checkPOB){
               
-              $POBFileResult = $this->sendDocuments($customerId,$row[0]['order_id'],"POB",$enrollModel);
+              $POBFileResult = $this->sendDocuments($customerId,$row[0]['order_id'],"POB",$enrollModel,$company);
               $processData['process_status']=$POBFileResult['msg'];
               $enrollModel->updateData($processData,'lifeline_records');
 
@@ -200,7 +204,7 @@ Class APIprocess{
 
     }
 
-    public function sendDocuments($customerId,$orderId,$fileType,$enrollModel){
+    public function sendDocuments($customerId,$orderId,$fileType,$enrollModel,$company){
     //$this->APIService = new APIprocess();
     //$row = $this->enrollModel->getCustomerData($customerId);
     switch($fileType){
@@ -216,7 +220,7 @@ Class APIprocess{
     }
     //print_r($row);
     $fileData = $this->getSavedfiles($customerId,$enrollModel,$fileType);
-    $credentials=$enrollModel->getCredentials();
+    $credentials=$enrollModel->getCredentials($company);
     if($orderId>0){
       if($fileData){
                 // Read the image file into a binary string 
@@ -227,7 +231,7 @@ Class APIprocess{
     //$compressedBase64 = base64_encode($compressed);
                 // Encode the binary data to base64
                 $base64 = base64_encode($imageData);
-                $upload=UploadDocument($credentials[0], $orderId, $filename, $base64, $fileID);
+                $upload=UploadDocument($credentials[0], $orderId, $filename, $base64, $fileID,$company);
                 if($upload['status']=="success"){
                   $saveCreateIDLog=[
                     "customer_id"=>$customerId,

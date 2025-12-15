@@ -74,7 +74,11 @@ class Enrolls extends Controller
             
       ];
       $this->enrollModel->saveData($data,'lifeline_records');
-      $this->view('enrolls/redirect',$data);
+      //$this->view('enrolls/redirect',$data);
+      //header('location: '. URLROOT . '/'.$page );
+      $redirect_url = 'https://gotruewireless.com/Signup.php?email_id='.$data['email'].'&zip_code='.$data['zipcode'];
+      header('location:'.$redirect_url);
+      //redirect('https://demo-truewireless-web.telgoo5.com/Signup.php?tg_agent_id=&email_id='.$data['email'].'&zip_code='.$data['zipcode']);
     }
   }
 
@@ -150,7 +154,7 @@ class Enrolls extends Controller
       //exit();
       if (in_array($data['state'], $TWStates)) {
         $data['powered']="GTW";
-      } else if (in_array($data['state'], $NALstates)) {
+      } else if (in_array($data['state'], $NALStates)) {
         //$this->view('enrolls/index',$data);
         $data['powered']="NAL";
       }else if (in_array($data['state'], $AMBTstates)) {
@@ -172,7 +176,7 @@ class Enrolls extends Controller
   public function savestep1()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $secret = "6LeNtMcrAAAAAE6ODEJB6dVsGrqLLdvw5LxG8o8Q";
+    $secret = "6LeVbyYsAAAAALRrpPD-3ut44yhQEbX4maS9iizb";
     $responseKey = $_POST['g-recaptcha-response'];
     $remoteip = $_SERVER['REMOTE_ADDR'];
       
@@ -239,7 +243,8 @@ class Enrolls extends Controller
           "match_type" => (isset($_POST['match_type'])) ? $_POST['match_type'] : null,
           "utm_adgroup" => (isset($_POST['utm_adgroup'])) ? $_POST['utm_adgroup'] : null,
           "gclid" => (isset($_POST['gclid'])) ? $_POST['gclid'] : null,
-          "fbclid" => (isset($_POST['fbclid'])) ? $_POST['fbclid'] : null
+          "fbclid" => (isset($_POST['fbclid'])) ? $_POST['fbclid'] : null,
+          "ETC"=>$_POST['powered']
         ];
         if($customer_id){
           $data['customer_id']=$customer_id;
@@ -461,7 +466,7 @@ class Enrolls extends Controller
     }
   }
 
-  public function sendDocuments($customerId,$orderId,$fileType){
+  public function sendDocuments($customerId,$orderId,$fileType,$company){
     $this->APIService = new APIprocess();
     //$row = $this->enrollModel->getCustomerData($customerId);
     switch($fileType){
@@ -477,7 +482,7 @@ class Enrolls extends Controller
     }
     //print_r($row);
     $fileData = $this->APIService->getSavedfiles($customerId,$this->enrollModel,$fileType);
-    $credentials=$this->enrollModel->getCredentials();
+    $credentials=$this->enrollModel->getCredentials($company);
     if($orderId>0){
       if($fileData){
                 // Read the image file into a binary string 

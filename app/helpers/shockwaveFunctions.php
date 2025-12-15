@@ -268,7 +268,11 @@ function create_shockwave_account($data,$credentials,$packages){
 
 
 	// Make the API call
-	$url = "https://wirelessapi.shockwavecrm.com/PrepaidWireless/AddSubscriberOrderWithEBBData";
+	if($data['ETC']=="NAL"){
+		$url = "http://wirelessapi.mvnocloudsolutions.com/PrepaidWireless/AddSubscriberOrderWithEBBData";
+	}else{
+		$url = "https://wirelessapi.shockwavecrm.com/PrepaidWireless/AddSubscriberOrderWithEBBData";
+	}
 	//$request = json_encode($OrderRequest);
 	$response = unavoAPICall($url, $OrderRequest);	
 	//print_r($response);
@@ -838,7 +842,7 @@ function UploadDocumentTest($credentials, $order_id, $filename, $fileBase64, $Do
     ];
 }
 
-function UploadDocument($credentials, $order_id, $filename, $fileBase64, $DocumentTypeID)
+function UploadDocument($credentials, $order_id, $filename, $fileBase64, $DocumentTypeID,$company)
 {
 
     //$credentials = getCredentialCLEC($company, $source);
@@ -855,7 +859,11 @@ function UploadDocument($credentials, $order_id, $filename, $fileBase64, $Docume
 	"DocumentData": "' .  $fileBase64 . '"
 	}';
 
-    $url = "https://wirelessapi.shockwavecrm.com/PrepaidWireless/UploadDocument";
+    if($company=="NAL"){
+		$url = "http://wirelessapi.mvnocloudsolutions.com/PrepaidWireless/UploadDocument";
+	}else{
+		$url = "https://wirelessapi.shockwavecrm.com/PrepaidWireless/UploadDocument";
+	}
 
     $response_1 = unavoAPICall($url, $request_1);
 	/*$response = '{
