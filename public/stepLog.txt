@@ -1,0 +1,17 @@
+start first step
+Captacha succeee
+New Lead Saved
+Telgoo Enrollment
+Telgoo Enrollment SuccessUpdate New DataID File SAved
+Step 3 Saved
+Agreement Data Saved
+Telgoo Step 4 
+Telgoo Step 6
+[{"type_doc":"ID","to_unavo":0,"filepath":"http:\/\/localhost:8080\/truewirelesslifeline\/uploads\/TWFR8F0034\/ID_TWFR8F0034.pdf"}]
+C:/wamp64/www/TruewirelessLifeline/public/uploads/
+C:/wamp64/www/TruewirelessLifeline/public/uploads/TWFR8F0034/ID_TWFR8F0034.pdf
+application/pdf
+Telgoo Upload Docs
+{"errors":["Invalid Plan Id."],"msg":"Error occured","msg_code":"RESTAPI110","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJkYXRhIjp7InVzZXJuYW1lIjoiRGVtby1Hb1RydWVXaXJlbGVzc05SVFVzZXIiLCJ2ZW5kb3JfaWQiOiJEZW1vLUdvVHJ1ZVdpcmVsZXNzTlJUIiwibG9nX2lkIjo2MDIyNzE2fSwiZXhwIjoxNzY2MjU5NzY4fQ.9bPgTQM5p2Rh7B23d-wqi0LtrGVlXRWUswVDcgGetTg"}
+["Invalid Plan Id."]
+{"acp_status":"[\"Invalid Plan Id.\"]","customer_id":"TWFR8F0034"}

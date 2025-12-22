@@ -333,8 +333,6 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                             <input type="hidden" id="gclid" name="gclid" value="<?php echo $gclid; ?>">
                             <input type="hidden" id="fbclid" name="fbclid" value="<?php echo $fbclid; ?>">
                             <input type="hidden" id="powered" name="powered" value="<?php echo $data['powered'] ?? ''; ?>">
-                            <input type="hidden" id="enrollment_id" name="enrollment_id" value="<?php echo $data['enrollment_id'] ?? ''; ?>">
-                            <input type="hidden" id="tribal" name="tribal" value="<?php echo $data['is_tribal'] ?? ''; ?>">
                         </section>
 
                         <h3>Eligibility</h3>
@@ -754,10 +752,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                     $("#customer_id").val(customer_id);
                                     grecaptcha.reset();
                                     canProceed = true;
-                                    let powered = $("#powered").val();
-                                    let zipcode = $("#zipcode").val();
-                                    let tribal = $("#tribal").val();
-                                    getlifelineprograms(powered,zipcode,tribal);
+                                    getlifelineprograms();
                                     //$("#enrollForm").steps("next");
                                 }
 
@@ -914,9 +909,9 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
             '<h6>Ship to a different address? <i class="fa fa-chevron-down"></i></h6>');
     });
 
-    function getlifelineprograms(etc,zipcode='',tribal=''){
+    function getlifelineprograms(){
         $.ajax({
-            url: "<?php echo URLROOT; ?>/enrolls/getprograms/"+etc+"/"+zipcode+"/"+tribal,
+            url: "<?php echo URLROOT; ?>/enrolls/getprograms",
             method: "GET",
             async: false, // block navigation until response
             success: function(response) {

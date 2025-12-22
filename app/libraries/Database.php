@@ -74,9 +74,9 @@
 		$this->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_COLUMN);
 	}
-		public function resultSet(){
-		$this->execute();
-		return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+	public function resultSet(){
+			$this->execute();
+			return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 	// Get result single record as objects
 	public function single(){

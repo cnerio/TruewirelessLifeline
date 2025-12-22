@@ -31,16 +31,17 @@ $raw = file_get_contents("php://input");
 file_put_contents("receiving.txt", $raw);
 $arrayPost = json_decode($raw, true);
 
-//$arrayPost['orderId']='123456';
+$arrayPost['orderId']='WGT5894';
 $env = "prod";
 if (isset($arrayPost['orderId'])) {
+    //file_put_contents("select.txt", json_encode($row));
     $orderId = $arrayPost['orderId'];
 
         $db = connections();
-        $stmt = $db->prepare('SELECT lr.*,lp.name as "program_name" FROM lifeline_records lr JOIN lifeline_programs lp ON lr.program_benefit = lp.id_program WHERE order_id=?');
+        $stmt = $db->prepare('SELECT lr.*,lp.name as "program_name" FROM lifeline_records lr LEFT JOIN lifeline_programs lp ON lr.program_benefit = lp.id_program WHERE order_id=?');
         $stmt->execute([$orderId]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
-        //print_r($row);
+        file_put_contents("select.txt", json_encode($row));
         if (!empty($row)) {
 
             $name = $row['first_name'] . " " . $row['second_name'];
@@ -72,7 +73,7 @@ if (isset($arrayPost['orderId'])) {
             $shipping_city = $row['shipping_city'];
             $shipping_state = $row['shipping_state'];
             $shipping_zipcode = $row['shipping_zipcode'];
-            $program_name = $row['program_name'];
+            $program_name = ($row['ETC']=="AMBT") ? $row['program_name'] : $row['program_benefit'];
             /**************************/
             $complete_address = $row['address1'] . "," . $row['city'] . "," . $row['state'] . " " . $row['zipcode'];
             $docName = "Consent_".$row['customer_id'].".pdf";
@@ -594,7 +595,7 @@ function connections()
 
     try {
 
-        $dbh = new PDO('mysql:host='.DB_HOST.';dbname='.DB_NAME, DB_USER, DB_PASS);
+        $dbh = new PDO('mysql:host='.DB_HOST.';port=3308;dbname='.DB_NAME, DB_USER, DB_PASS);
 
     } catch (PDOException $e) {
 

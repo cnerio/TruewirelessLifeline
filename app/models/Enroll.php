@@ -75,9 +75,20 @@ class Enroll {
     }
 
     public function getPackages($company){
-        $this->db->query("SELECT * FROM packages WHERE active=1 and etc=:company;");
+        $this->db->query("SELECT * FROM packages WHERE active=1 and provider=:company;");
         $this->db->bind(":company",$company);
         $result = $this->db->resultSet();
+        return $result;
+    }
+
+    public function getTGPackages($state,$company,$isTribal){
+        ///echo $company;
+        $this->db->query("SELECT * FROM packages WHERE active=1 AND provider=:company AND state=:states AND tribal=:isTribal;");
+        $this->db->bind(":company",$company);
+        $this->db->bind(":states",$state);
+        $this->db->bind(":isTribal",$isTribal);
+        $result = $this->db->resultSet();
+        //print_r($result);
         return $result;
     }
 
@@ -98,7 +109,7 @@ class Enroll {
 
     public function getAllFiles($customerId){
         //$this->db->query("SELECT * FROM lifeline_documents WHERE customer_id=:custId");
-        $this->db->query('SELECT distinct(type_doc),to_unavo,filepath,type_doc FROM applygoknows_records.lifeline_documents WHERE customer_id=:custId AND to_unavo=0 AND type_doc in ("ID","POB")');
+        $this->db->query('SELECT distinct(type_doc),to_unavo,filepath,type_doc FROM lifeline_documents WHERE customer_id=:custId AND to_unavo=0 AND type_doc in ("ID","POB")');
         $this->db->bind(":custId",$customerId);
         $result = $this->db->resultSet();
         return $result;

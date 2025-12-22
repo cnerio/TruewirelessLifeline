@@ -195,6 +195,8 @@ require APPROOT . '/views/inc/navbar.php';
                     <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
                     <button id="submitform" type="Submit" class="btn btn-primary" value="">Check</button>
                     <input type="hidden" id="powered" name="powered" value="">
+                    <input type="hidden" id="enrollment_id" name="enrollment_id" value="">
+                    <input type="hidden" id="is_tribal" name="is_tribal" value="">
                     <div id="response"></div>
                 </div>
             </form>
@@ -289,13 +291,11 @@ $("#submitform").on("click",function(event){
                 resObj = JSON.parse(response);
                 console.log(resObj)
                 $("#powered").val(resObj.powered);
-                exit();
-                if(resObj.powered=="GTW"){
-                    
-                    //window.location.href ="<?php //echo URLROOT;?>/enrolls/redirect";
-                     form.attr('action', "<?php echo URLROOT;?>/enrolls/redirect");
-                     form.submit();
-                }else{
+                $("#enrollment_id").val(resObj.enrollment_id);
+                $("#is_tribal").val(resObj.is_tribal);
+                //console.tab("resObj:",resObj);
+                //exit();
+                if(resObj.status=="success"){
                     form.submit();
                 }
             },

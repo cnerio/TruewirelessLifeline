@@ -11,22 +11,22 @@ class Enrolls extends Controller
 
   public function index2()
   {
-    echo $projectRoot = '../public/uploads/';
-    //echo $uploadFolder = $projectRoot . '/public/uploads/';
-    // if(isLoggedIn()){
-    //   redirect('posts');
-    // }
     $data = [
-      'title' => 'SharePosts',
-      'description' => 'Simple social network built on the Emmizy MVC framework',
-      'info' => 'You can contact me with the following details below if you like my program and willing to offer me a contract and work on your project',
-      'name' => 'Omonzebaguan Emmanuel',
-      'location' => 'Nigeria, Edo State',
-      'contact' => '+2348147534847',
-      'mail' => 'emmizy2015@gmail.com'
-    ];
+            "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
+            "second_name" => trim(ucfirst(strtolower($_POST['lastname']))),
+            // "address1" => trim($_POST['address1']),
+            // "address2" => trim($_POST['addess2']),
+            // "city" => trim(ucfirst(strtolower($_POST['city']))),
+            "email" => trim(strtolower($_POST['email'])),
+            "state" => strtoupper(trim($_POST['state'] ?? '')),
+            "zipcode" => $_POST['zipcode'],
+            "url" => $full_url,
+            "utms"=>$utms?:"",
+            "powered"=>"GTW"
+            
+          ];
 
-    $this->view('pages/index', $data);
+          $this->view('enrolls/index2', $data);
   }
 
   public function index()
@@ -46,7 +46,9 @@ class Enrolls extends Controller
             "zipcode" => $_POST['zipcode'],
             "url" => $full_url,
             "utms"=>$utms,
-            "powered"=>$_POST['powered']
+            "powered"=>$_POST['powered'],
+            "enrollment_id"=>$_POST['enrollment_id'],
+            "is_tribal"=>$_POST['is_tribal']
             
           ];
 
@@ -118,10 +120,12 @@ class Enrolls extends Controller
     $flea = ($data['email']) ? strtoupper(substr($data['email'], 0, 1)) : "X";
     $num = str_pad($lastId, 4, '0', STR_PAD_LEFT);
 
-    $customerId = "TW-" . $flfn . $flsn . $fdpn . $flea . $num;
+    $customerId = "TW" . $flfn . $flsn . $fdpn . $flea . $num;
 
     return $customerId;
   }
+
+
 
   public function check()
   {
@@ -143,32 +147,23 @@ class Enrolls extends Controller
         "utms"=>$utms
         
       ];
-      $AMBTstates = $this->enrollModel->getStates('AMBT');
-      //$data['ambtstates']=$AMBTstates;
-      
-      $TWStates = $this->enrollModel->getStates('GTW');
-
-      $NALStates = $this->enrollModel->getStates('NAL');
-      //print_r($states);
-      //$data['twstates']=$TWStates;
-      //exit();
-      if (in_array($data['state'], $TWStates)) {
+      $check = $this->telgooProcessStep($data,'GTWTEST',1);
+      if($check['msg']=="Success"){
+        $data['enrollment_id'] = $check['data']['enrollment_id'];
+        $data['is_tribal'] = $check['data']['is_tribal'];
         $data['powered']="GTW";
-      } else if (in_array($data['state'], $NALStates)) {
-        //$this->view('enrolls/index',$data);
-        $data['powered']="NAL";
-      }else if (in_array($data['state'], $AMBTstates)) {
-        //$this->view('enrolls/index',$data);
-        $data['powered']="AMBT";
-      }
-      
-      if($data['state']=="TX"){
-          $twzipcodes = $this->enrollModel->getZipcodes('GTW');
-          if(in_array($data['zipcode'],$twzipcodes)){
-            //redirect('enrolls/redirect');
-            $data['powered']="GTW";
-          }
+      }else{
+        $check = $this->telgooProcessStep($data,'NALTEST',1);
+        if($check['msg']=="Success"){
+          $data['enrollment_id'] = $check['data']['enrollment_id'];
+           $data['is_tribal'] = $check['data']['is_tribal'];
+          $data['powered']="NAL";
+        }else{
+          $data['enrollment_id'] ="";
+          $data['powered']="AMBT";
         }
+      }
+      $data['status'] = "success";
       echo json_encode($data);
     }
   }
@@ -176,6 +171,7 @@ class Enrolls extends Controller
   public function savestep1()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      file_put_contents("stepLog.txt", "start first step\n");
     $secret = "6LeVbyYsAAAAALRrpPD-3ut44yhQEbX4maS9iizb";
     $responseKey = $_POST['g-recaptcha-response'];
     $remoteip = $_SERVER['REMOTE_ADDR'];
@@ -189,6 +185,7 @@ class Enrolls extends Controller
             'response' => $responseKey,
             'remoteip' => $remoteip
         ]));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         
         $response = curl_exec($ch);
         curl_close($ch);
@@ -203,7 +200,9 @@ class Enrolls extends Controller
       if (!$result['success']) {
         $data['status'] = "fail";
         $data['msg']= 'CAPTCHA verification failed';
+        file_put_contents("stepLog.txt", "CAPTCHA verification failed\n", FILE_APPEND);
       }else{
+        file_put_contents("stepLog.txt", "Captacha succeee\n", FILE_APPEND);
         $phonenumber = preg_replace('/[^0-9]/', '', $_POST['phone']);
         $dob = date("m/d/Y", strtotime($_POST['dobM'] . "/" . $_POST['dobD'] . "/" . $_POST['dobY']));
         if(isset($_POST['customer_id'])){
@@ -212,7 +211,9 @@ class Enrolls extends Controller
           $customer_id =null;
         };
         $full_url = $_POST['url'];
-        parse_str(parse_url($full_url, PHP_URL_QUERY), $params);
+
+        //parse_str(parse_url($full_url, PHP_URL_QUERY), $params);
+        $params =[];
         $utms = json_encode($params);
         $data = [
           "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
@@ -244,7 +245,10 @@ class Enrolls extends Controller
           "utm_adgroup" => (isset($_POST['utm_adgroup'])) ? $_POST['utm_adgroup'] : null,
           "gclid" => (isset($_POST['gclid'])) ? $_POST['gclid'] : null,
           "fbclid" => (isset($_POST['fbclid'])) ? $_POST['fbclid'] : null,
-          "ETC"=>$_POST['powered']
+          "ETC"=>$_POST['powered'],
+          "order_id"=>$_POST['enrollment_id'],
+          "enrollment_id"=>$_POST['enrollment_id'],
+          "tribal"=>$_POST['tribal']
         ];
         if($customer_id){
           $data['customer_id']=$customer_id;
@@ -253,20 +257,31 @@ class Enrolls extends Controller
             //$data['customer_id'] = $customerId;
             $data['status'] = "success";
             $data['action']="update";
+            file_put_contents("stepLog.txt", "Update LEad\n", FILE_APPEND);
         }else{
           $lastId = $this->enrollModel->saveData($data, 'lifeline_records');
-          
+          file_put_contents("stepLog.txt", "New Lead Saved\n", FILE_APPEND);
           if ($lastId > 0) {
             //$data['lastId']=$lastId;
             $customerId = $this->genCustomerId($data, $lastId);
-            $this->enrollModel->updateCusId($lastId, $customerId, 'lifeline_records');
             $data['customer_id'] = $customerId;
-            $data['action']="insert";
-            $data['status'] = "success";
+            $this->enrollModel->updateCusId($lastId, $customerId, 'lifeline_records');
+            $addressValidation = $this->telgooProcessStep($data,"GTWTEST",2);
+            file_put_contents("stepLog.txt", "Telgoo Enrollment\n", FILE_APPEND);
+            if($addressValidation['msg']=="Success"){
+              file_put_contents("stepLog.txt", "Telgoo Enrollment Success", FILE_APPEND);
+              $data['action']="insert";
+              $data['status'] = "success";
+            }else{
+              $data['status'] = "fail";
+            }
+            
           } else {
             $data['status'] = "fail";
           }
         }
+
+        
         
       }
       //print_r($data);
@@ -289,10 +304,12 @@ class Enrolls extends Controller
       ];
 
       $this->enrollModel->updateData($data, 'lifeline_records');
+      file_put_contents("stepLog.txt", "Update New Data", FILE_APPEND);
       if (!empty($_POST['govId'])) {
         $base64_string = $_POST['govId'];
         $customer_id = $data['customer_id'];
         $filepath = saveBase64File($base64_string, $customer_id, "ID");
+        file_put_contents("stepLog.txt", "ID File SAved\n", FILE_APPEND);
         $fileData = [
           "customer_id" => $customer_id,
           "filepath" => $filepath,
@@ -307,6 +324,7 @@ class Enrolls extends Controller
         $base64_string_pob= $_POST['pob'];
         $customer_id = $data['customer_id'];
         $filepath2 = saveBase64File($base64_string_pob, $customer_id, "POB");
+        file_put_contents("stepLog.txt", "POB Faile Saved\n", FILE_APPEND);
         $pobData = [
           "customer_id" => $customer_id,
           "filepath" => $filepath2,
@@ -352,6 +370,7 @@ class Enrolls extends Controller
         ];
 
         $this->enrollModel->updateData($data, 'lifeline_records');
+        file_put_contents("stepLog.txt", "Step 3 Saved\n", FILE_APPEND);
         $initialData = [
           "initials1" => trim(strtoupper($_POST['initials_1'])),
           "initials2" => trim(strtoupper($_POST['initials_2'])),
@@ -366,13 +385,44 @@ class Enrolls extends Controller
         ];
 
         $initialData['statusfinale'] = ($this->enrollModel->saveData($initialData, 'lifeline_agreement')) ? true : false;
-        //echo json_encode($initialData);
-
-        // $customerData = $this->enrollModel->getCustomerData($data['customer_id']);
-        $this->APIService = new APIprocess();
-        $result = $this->APIService->shockwaveProcess($data['customer_id'], $this->enrollModel);
-
+        file_put_contents("stepLog.txt", "Agreement Data Saved\n", FILE_APPEND);
         $row2 = $this->enrollModel->getCustomerData($data['customer_id']);
+        //echo json_encode($initialData);
+        if($row2[0]['ETC']=="GTW" or $row2[0]['ETC']=="NAL"){
+          $this->telgooProcessStep($row2[0], "TEST",4);
+          file_put_contents("stepLog.txt", "Telgoo Step 4 \n", FILE_APPEND);
+          $isTribal=$row2[0]['tribal']=="Y"?1:0;
+          $plan=$this->enrollModel->getTGPackages($row2[0]['state'],$row2[0]['ETC'],$isTribal);
+          $row2[0]['plan_id']=$plan[0]['packageId'];
+          $customer = $this->telgooProcessStep($row2[0], "TEST",6);
+          file_put_contents("stepLog.txt", "Telgoo Step 6\n", FILE_APPEND);
+          $this->uploadTGDocs($data['customer_id'],$row2[0]['order_id']);
+          file_put_contents("stepLog.txt", "Telgoo Upload Docs\n", FILE_APPEND);
+          file_put_contents("stepLog.txt", json_encode($customer)."\n", FILE_APPEND);
+          if($customer['msg']=="Success"){
+              $acpStatus = json_encode($customer['data']);
+              file_put_contents("stepLog.txt", json_encode($customer['data'])."\n", FILE_APPEND);
+              
+          }else{
+            $acpStatus = json_encode($customer['errors']);
+             file_put_contents("stepLog.txt", json_encode($customer['errors'])."\n", FILE_APPEND);
+          }
+         
+          $data['acp_status']=$acpStatus;
+          $saveResponse = [
+            "acp_status" => $acpStatus,
+            "customer_id" => $data['customer_id']
+          ];
+           file_put_contents("stepLog.txt", json_encode($saveResponse)."\n", FILE_APPEND);
+           $this->enrollModel->updateData($saveResponse, 'lifeline_records');
+        }else{
+          // $customerData = $this->enrollModel->getCustomerData($data['customer_id']);
+          $this->APIService = new APIprocess();
+          $result = $this->APIService->shockwaveProcess($data['customer_id'], $this->enrollModel);
+        }
+        
+        $row2[0]['acp_status'] = $acpStatus;
+        
         $this->sendNotification($row2[0]);
 
         echo json_encode($result);
@@ -542,49 +592,180 @@ class Enrolls extends Controller
     $this->view("enrolls/compress",$data);
   }
 
-  public function test($zipcode){
-    try {
-    $this->TG5Api = new LifelineApiHandler(
+  public function uploadTGDocs($customer_id,$enrollmentId){
+    $files = $this->enrollModel->getAllFiles($customer_id);
+    file_put_contents("stepLog.txt", json_encode($files)."\n", FILE_APPEND);
+    $folder = $_SERVER['DOCUMENT_ROOT'].'/TruewirelessLifeline/public/uploads/';
+    file_put_contents("stepLog.txt", $folder."\n", FILE_APPEND);
+    //echo __DIR__."/../";
+    if($files){
+      foreach($files as $file){
+        if($file['type_doc'] == "ID"){
+          $imageData = $this->curl_get_file_contents($file['filepath']);
+          $filename = basename($file['filepath']);
+          $filePath = $folder.$customer_id.'/'. $filename;
+          file_put_contents("stepLog.txt", $filePath."\n", FILE_APPEND);
+          $finfo = finfo_open(FILEINFO_MIME_TYPE);
+          $mimeType = finfo_file($finfo, $filePath);
+          finfo_close($finfo);
+          file_put_contents("stepLog.txt", $mimeType."\n", FILE_APPEND);
+          //$filename = basename($fileData['filepath']);
+          $base64Img = base64_encode($imageData);
+          $saveFiles = [
+            "enrollment_id" => $enrollmentId,
+            "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
+            "proof_category" => "ID_PROOF"
+          ];
+          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
+          
+        }else if($file['type_doc'] == "POB"){
+          $imageData = $this->curl_get_file_contents($file['filepath']);
+          $filename = basename($file['filepath']);
+          $filePath = $folder.$customer_id.'/'. $filename;
+          $finfo = finfo_open(FILEINFO_MIME_TYPE);
+          $mimeType = finfo_file($finfo, $filePath);
+          finfo_close($finfo);
+          //$filename = basename($fileData['filepath']);
+          $base64Img = base64_encode($imageData);
+          $saveFiles = [
+            "enrollment_id" => $enrollmentId,
+            "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
+            "proof_category" => "GA_PROOF"
+          ];
+          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
+        }
+      }
+    }
+    // echo "<pre>";
+    // echo json_encode($saveFiles);
+    // echo "<br>";
+    // echo "<img src='data:" . $mimeType . ";base64," . $base64Img . "' alt='Compressed Image'>";
+    //echo json_encode($customer);
+  }
+
+  public function test($customer_id,$enrollmentId){
+    $files = $this->enrollModel->getAllFiles($customer_id);
+    $folder = $_SERVER['DOCUMENT_ROOT'].'/TruewirelessLifeline/public/uploads/';
+    //echo __DIR__."/../";
+    if($files){
+      foreach($files as $file){
+        if($file['type_doc'] == "ID"){
+          $imageData = $this->curl_get_file_contents($file['filepath']);
+          $filename = basename($file['filepath']);
+          $filePath = $folder.$customer_id.'/'. $filename;
+          $finfo = finfo_open(FILEINFO_MIME_TYPE);
+          $mimeType = finfo_file($finfo, $filePath);
+          finfo_close($finfo);
+          //$filename = basename($fileData['filepath']);
+          $base64Img = base64_encode($imageData);
+          $saveFiles = [
+            "enrollment_id" => $enrollmentId,
+            "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
+            "proof_category" => "ID_PROOF"
+          ];
+          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
+        }else if($file['type_doc'] == "POB"){
+          $imageData = $this->curl_get_file_contents($file['filepath']);
+          $filename = basename($file['filepath']);
+          $filePath = $folder.$customer_id.'/'. $filename;
+          $finfo = finfo_open(FILEINFO_MIME_TYPE);
+          $mimeType = finfo_file($finfo, $filePath);
+          finfo_close($finfo);
+          //$filename = basename($fileData['filepath']);
+          $base64Img = base64_encode($imageData);
+          $saveFiles = [
+            "enrollment_id" => $enrollmentId,
+            "proof_file" => 'data:' . $mimeType . ';base64,' . base64_encode($base64Img),
+            "proof_category" => "GA_PROOF"
+          ];
+          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
+        }
+      }
+    }
+    // echo "<pre>";
+    // echo json_encode($saveFiles);
+    // echo "<br>";
+    // echo "<img src='data:" . $mimeType . ";base64," . $base64Img . "' alt='Compressed Image'>";
+    //echo json_encode($customer);
+  }
+
+  public function setApiCredentials($etc,$data){
+    $customer_id = isset($data['customer_id']) ? $data['customer_id'] : 0;
+    switch($etc){
+      case "GTW":
+        $this->TG5Api = new LifelineApiHandler(
+        "https://www.vcareapi.com:8080",
+        "GoTrueWirelesstwlifeline",
+        "GoTrueWirelesstwlifelineug24User",
+        "GoTrueWi595jst3uf735",
+        "819015401243",
+        $this->enrollModel,
+        $customer_id
+        );
+        break;
+      case "NAL":
+        $this->TG5Api = new LifelineApiHandler(
+        "https://www.vcareapi.com:8080",
+        "NorthAmericanLocalClient",
+        "NorthAmericanLocalClienth2s5User",
+        "NorthAme6cq298nf2uv7",
+        "095361035869",
+        $this->enrollModel,
+        $customer_id
+        );
+        break;
+      default:
+        $this->TG5Api = new LifelineApiHandler(
         "https://www.vcareapi.com:8080",
         "Demo-GoTrueWirelessNRT",
         "Demo-GoTrueWirelessNRTUser",
         "Demo-GoTrueWi674f2b9w87dg",
-        "Demo-933516178627"
-    );
+        "Demo-933516178627",
+        $this->enrollModel,
+        $customer_id
+        );
+        break;
+    }
+  }
 
+  public function telgooProcessStep($data,$etc,$step){
+    $this->setApiCredentials($etc,$data);
     $this->TG5Api->authenticate(); // get token first
-
-    $availability = $this->TG5Api->checkServiceAvailability([
-            "action"=> "check_service_availability",
-            "zip_code"=> $zipcode,
-            "enrollment_type"=> "LIFELINE",
-            "is_enrollment"=> "Y",
-            "agent_id"=> "ewebsiteapi",
-            "external_transaction_id"=> "",
-            "source"=> "WEBSITE"
-    ]);
-    if($availability['msg']=="Success"){
-      echo "Zipcode for Telgoo 5";
-      $enrollmentId = $availability['data']['enrollment_id'];
-      $this->TG5Api->authenticate(); 
-      $addressValidation = $this->TG5Api->addressValidation([
-        "enrollment_id"=> $enrollmentId,
-        "first_name"=> "JOHN",
-        "middle_name"=> "",
-        "last_name"=> "DOE",
-        "address_one"=> "test Street",
-        "address_two"=> "",
-        "city"=> "Tulsa",
-        "state"=> "PR",
-        "zip_code"=> $zipcode,
+    //echo "authenticate<br>";
+    switch($step){
+      case 1:
+        //Step 1 Check_service_availability
+        $response = $this->TG5Api->checkServiceAvailability([
+                "action"=> "check_service_availability",
+                "zip_code"=> $data['zipcode'],
+                "enrollment_type"=> "LIFELINE",
+                "is_enrollment"=> "Y",
+                "agent_id"=> "ewebsiteapi",
+                "external_transaction_id"=> "",
+                "source"=> "WEBSITE"
+        ]);
+        //echo "Check Service Availability<br>";
+        break;
+      case 2:
+        //Step 2 address_validation
+        $response = $this->TG5Api->addressValidation([
+        "enrollment_id"=> $data['enrollment_id'],
+        "first_name"=> $data['first_name'],
+        "middle_name"=> '',
+        "last_name"=> $data['second_name'],
+        "address_one"=> $data['address1'],
+        "address_two"=> $data['address2'],
+        "city"=> $data['city'],
+        "state"=> $data['state'],
+        "zip_code"=> $data['zipcode'],
         "is_temp"=> "N",
-        "ssn"=> "1234",
-        "dob"=> "2004-08-02",
-        "mailing_address_one"=> "",
-        "mailing_address_two"=> "",
-        "mailing_city"=> "",
-        "mailing_state"=> "",
-        "mailing_zip"=> "",
+        "ssn"=> $data['ssn'],
+        "dob"=> date("Y-m-d", strtotime($data['dob'])),
+        "mailing_address_one"=> ($data['shipping_address1']) ? $data['shipping_address1'] : "",
+        "mailing_address_two"=> ($data['shipping_address2']) ? $data['shipping_address2'] : "",
+        "mailing_city"=> ($data['shipping_city']) ? $data['shipping_city'] : "",
+        "mailing_state"=> ($data['shipping_state']) ? $data['shipping_state'] : "",
+        "mailing_zip"=> ($data['shipping_zipcode']) ? $data['shipping_zipcode'] : "",
         "beneficiary_suffix"=> "",
         "beneficiary_first_name"=> "",
         "beneficiary_middle_name"=> "",
@@ -596,15 +777,301 @@ class Enrolls extends Controller
         "agent_id"=> "ewebsiteapi",
         "source"=> "WEBSITE",
         "lifeline_enrollment_type"=> "LIFELINE",
-        "address_validation"=>"Y",
         "initial_choosen_enrollment_type"=> "LIFELINE"
+      ]);
+        break;
+      case 3:
+        //Step 3 Get Program List
+        $response = $this->TG5Api->programsIncomeList([
+              "zip_code"=> $data['zipcode'],
+              "action"=> "programs_income_list",
+              "is_tribal"=> $data['tribal'],
+              "agent_id"=> "ewebsiteapi",
+              "source"=> "WEBSITE",
+              "initial_choosen_enrollment_type"=> "LIFELINE ",
+              "external_transaction_id"=> "",
+              "lifeline_enrollment_type"=> "LIFELINE"
+        ]);
+        break;
+      case 4:
+        $response = $this->TG5Api->eligibilityCheck([
+              "enrollment_id"=> $data['enrollment_id'],
+              "first_name"=> $data['first_name'],
+              "middle_name"=> $data['middle_name'],
+              "last_name"=> $data['second_name'],
+              "address_one"=> $data['address1'],
+              "address_two"=> $data['address2'],
+              "beneficiary_first_name"=> $data['bqp_firstname']??"",
+              "beneficiary_middle_name"=> $data['bqp_middlename']??"",
+              "beneficiary_last_name"=> $data['bqp_lastname']??"",
+              "beneficiary_dob"=> $data['bqp_dob']??"",
+              "beneficiary_ssn"=> $data['bqp_ssn']??"",
+              "beneficiary_tribal_id"=> $data['bqp_tribalid']??"",
+              "city"=> $data['city'],
+              "state"=> $data['state'],
+              "zip_code"=> $data['zipcode'],
+              "tribal_id"=> $data['tribal_id']??"",
+              "ssn"=> $data['ssn'],
+              "dob"=> date("Y-m-d", strtotime($data['dob'])),
+              "program_code"=> [
+                $data['program_benefit']
+              ],
+              "no_of_household"=> "",
+              "action"=> "eligibility_check",
+              "agent_id"=> "ewebsiteapi",
+              "source"=> "WEBSITE",
+              "carrier_url"=> "",
+              "public_housing_code"=> "",
+              "external_transaction_id"=> ""
+        ]);
+        break;
+      case 5:
+        $response = $this->TG5Api->planList([
+            "action"=> "plan_list",
+            "zip_code"=> $data['zipcode'],
+            "enrollment_type"=> "LIFELINE",
+            "plan_id"=> "",
+            "agent_id"=> "ewebsiteapi",
+            "external_transaction_id"=> "",
+            "source"=> "WEBSITE",
+            "tribal"=> $data['tribal'],
+        ]);
+        break;
+      case 6:
+        $response = $this->TG5Api->createLifelineCustomer([
+        "enrollment_id"=>  $data['enrollment_id'],
+        "customer_suffix"=> "",
+        "first_name"=> $data['first_name'],
+        "middle_name"=> $data['middle_name'],
+        "last_name"=> $data['second_name'],
+        "primary_telephone_number"=> $data['phone_number'],
+        "service_address_one"=> $data['address1'],
+        "service_address_two"=> $data['address2'],
+        "service_city"=> $data['city'],
+        "service_state"=> $data['state'],
+        "service_zip"=> $data['zipcode'],
+        "mailing_address_one"=> "",
+        "mailing_address_two"=> "",
+        "mailing_city"=> "",
+        "mailing_state"=> "",
+        "mailing_zip"=> "",
+        "ssn"=> $data['ssn'],
+        "dob"=> date("Y-m-d", strtotime($data['dob'])),
+        "beneficiary_suffix"=> "",
+        "beneficiary_first_name"=> "",
+        "beneficiary_middle_name"=> "",
+        "beneficiary_last_name"=> " ",
+        "beneficiary_dob"=> "",
+        "beneficiary_ssn"=> "",
+        "beneficiary_tribal_id"=> "",
+        "email"=> $data['email'],
+        "plan_id"=> strval($data['plan_id']),
+        "best_way_to_reach"=> [
+            "email"
+        ],
+        "program_code"=> [
+            $data['program_benefit']
+        ],
+        "address_type"=> "P",
+        "household_adult"=> "Y",
+        "household_share"=> "",
+        "household_lifeline"=> "N",
+        "enrollment_type"=> "SHIPMENT",
+        "is_ebb_qualify"=> "Y",
+        "consent_check"=> "Y",
+        "ebb_verify_type"=> "NV",
+        "initial_choosen_enrollment_type"=> "LIFELINE",
+        "lifeline_enrollment_type"=> "LIFELINE",
+        "action"=> "create_lifeline_customer",
+        "agent_id"=> "ewebsiteapi",
+        "external_transaction_id"=> "",
+        "source"=> "WEBSITE"
+        ]);
+        break;
+      case 7:
+        $response = $this->TG5Api->uploadDocuments([
+            "enrollment_id"=> $data['enrollment_id'],
+            "proof_file"=> $data['proof_file'],
+            "action"=> "upload_proof",
+            "proof_category"=> $data['proof_category'],
+            "category_id"=> "",
+            "agent_id"=> "ewebsiteapi",
+            "external_transaction_id"=> "",
+            "source"=> "WEBSITE"
+        ]);
+        break;
+    }
 
+
+    return $response;
+  }
+
+  public function telgooProcess($data,$etc){
+    try {
+    
+    $this->setApiCredentials($etc,$data);
+    $this->TG5Api->authenticate(); // get token first
+    echo "authenticate<br>";
+
+    $availability = $this->TG5Api->checkServiceAvailability([
+            "action"=> "check_service_availability",
+            "zip_code"=> $data['zipcode'],
+            "enrollment_type"=> "LIFELINE",
+            "is_enrollment"=> "Y",
+            "agent_id"=> "ewebsiteapi",
+            "external_transaction_id"=> "",
+            "source"=> "WEBSITE"
     ]);
-    echo "<pre>";
-    print_r($addressValidation);
+    echo "Check Service Availability<br>";
+    if($availability['msg']=="Success"){
+      echo "Service Available<br>";
+      echo $enrollmentId = $availability['data']['enrollment_id'];
+      echo "<br>";
+      $this->TG5Api->authenticate();
+      $addressValidation = $this->TG5Api->addressValidation([
+        "enrollment_id"=> $enrollmentId,
+        "first_name"=> $data['first_name'],
+        "middle_name"=> $data['middle_name'],
+        "last_name"=> $data['second_name'],
+        "address_one"=> $data['address1'],
+        "address_two"=> $data['address2'],
+        "city"=> $data['city'],
+        "state"=> $data['state'],
+        "zip_code"=> $data['zipcode'],
+        "is_temp"=> "N",
+        "ssn"=> $data['ssn'],
+        "dob"=> $data['dob'],
+        "mailing_address_one"=> ($data['shipping_address1']) ? $data['shipping_address1'] : "",
+        "mailing_address_two"=> ($data['shipping_address2']) ? $data['shipping_address2'] : "",
+        "mailing_city"=> ($data['shipping_city']) ? $data['shipping_city'] : "",
+        "mailing_state"=> ($data['shipping_state']) ? $data['shipping_state'] : "",
+        "mailing_zip"=> ($data['shipping_zipcode']) ? $data['shipping_zipcode'] : "",
+        "beneficiary_suffix"=> "",
+        "beneficiary_first_name"=> "",
+        "beneficiary_middle_name"=> "",
+        "beneficiary_last_name"=> " ",
+        "beneficiary_dob"=> "",
+        "beneficiary_ssn"=> "",
+        "action"=> "address_validation",
+        "external_transaction_id"=> "",
+        "agent_id"=> "ewebsiteapi",
+        "source"=> "WEBSITE",
+        "lifeline_enrollment_type"=> "LIFELINE",
+        "initial_choosen_enrollment_type"=> "LIFELINE"
+      ]);
+      echo "Address Validation:<br>";
+      if($addressValidation['msg']=="Success"){
+        $this->TG5Api->authenticate();
+        $programlist = $this->TG5Api->programsIncomeList([
+              "zip_code"=> $data['zipcode'],
+              "action"=> "programs_income_list",
+              "is_tribal"=> "N",
+              "agent_id"=> "ewebsiteapi",
+              "source"=> "WEBSITE",
+              "initial_choosen_enrollment_type"=> "LIFELINE ",
+              "external_transaction_id"=> "",
+              "lifeline_enrollment_type"=> "LIFELINE"
+        ]);
+        echo "Program List:<br><pre>";
+        print_r($programlist);
+        echo "<br>";
+      }else{
+        echo "Address Validation Failed:<br>";
+        print_r($addressValidation);
+      }
+      $createCustomer = $this->TG5Api->createLifelineCustomer([
+        "enrollment_id"=> $enrollmentId,
+        "customer_suffix"=> "",
+        "first_name"=> $data['first_name'],
+        "middle_name"=> $data['middle_name'],
+        "last_name"=> $data['second_name'],
+        "primary_telephone_number"=> $data['phone_number'],
+        "service_address_one"=> $data['address1'],
+        "service_address_two"=> $data['address2'],
+        "service_city"=> $data['city'],
+        "service_state"=> $data['state'],
+        "service_zip"=> $data['zipcode'],
+        "mailing_address_one"=> "",
+        "mailing_address_two"=> "",
+        "mailing_city"=> "",
+        "mailing_state"=> "",
+        "mailing_zip"=> "",
+        "ssn"=> $data['ssn'],
+        "dob"=> $data['dob'],
+        "beneficiary_suffix"=> "",
+        "beneficiary_first_name"=> "",
+        "beneficiary_middle_name"=> "",
+        "beneficiary_last_name"=> " ",
+        "beneficiary_dob"=> "",
+        "beneficiary_ssn"=> "",
+        "beneficiary_tribal_id"=> "",
+        "email"=> $data['email'],
+        "plan_id"=> "1351",
+        "best_way_to_reach"=> [
+            "email"
+        ],
+        "program_code"=> [
+            "SNAP"
+        ],
+        "address_type"=> "P",
+        "household_adult"=> "Y",
+        "household_share"=> "",
+        "household_lifeline"=> "N",
+        "enrollment_type"=> "SHIPMENT",
+        "is_ebb_qualify"=> "Y",
+        "consent_check"=> "Y",
+        "ebb_verify_type"=> "NV",
+        "initial_choosen_enrollment_type"=> "LIFELINE",
+        "lifeline_enrollment_type"=> "LIFELINE",
+        "action"=> "create_lifeline_customer",
+        "agent_id"=> "ewebsiteapi",
+        "external_transaction_id"=> "",
+        "source"=> "WEBSITE"
+        ]);
+    // echo "<pre>";
+    // print_r($createCustomer);
+
+
+    //   $addressValidation = $this->TG5Api->addressValidation([
+    //     "enrollment_id"=> $enrollmentId,
+    //     "first_name"=> "JOHN",
+    //     "middle_name"=> "",
+    //     "last_name"=> "DOE",
+    //     "address_one"=> "test Street",
+    //     "address_two"=> "",
+    //     "city"=> "Tulsa",
+    //     "state"=> "OK",
+    //     "zip_code"=> $zipcode,
+    //     "is_temp"=> "N",
+    //     "ssn"=> "1234",
+    //     "dob"=> "2004-08-02",
+    //     "mailing_address_one"=> "",
+    //     "mailing_address_two"=> "",
+    //     "mailing_city"=> "",
+    //     "mailing_state"=> "",
+    //     "mailing_zip"=> "",
+    //     "beneficiary_suffix"=> "",
+    //     "beneficiary_first_name"=> "",
+    //     "beneficiary_middle_name"=> "",
+    //     "beneficiary_last_name"=> " ",
+    //     "beneficiary_dob"=> "",
+    //     "beneficiary_ssn"=> "",
+    //     "action"=> "address_validation",
+    //     "external_transaction_id"=> "TWTT8C0018",
+    //     "agent_id"=> "ewebsiteapi",
+    //     "source"=> "WEBSITE",
+    //     "lifeline_enrollment_type"=> "LIFELINE",
+    //     "address_validation"=>"Y",
+    //     "initial_choosen_enrollment_type"=> "LIFELINE"
+
+    // ]);
+    //echo "<pre>";
+    //print_r($addressValidation);
+    //echo "Address Validation:<br>";
+    
 
     }else{
-      echo "Zipcode to Shockwave";
+      echo "Service Not Available<br>";
     }
     // $json = json_encode($movie, JSON_PRETTY_PRINT);
     // echo $json;
@@ -816,11 +1283,33 @@ class Enrolls extends Controller
 
   
 
-  public function getprograms()
+  public function getprograms($etc=null,$zipcode=null,$tribal=null)
   {
-    $row = $this->enrollModel->getLifelinePrograms();
-    //print_r($row);
-    echo json_encode($row);
+    if($etc=="GTW" || $etc=="NAL"){
+      $data = [
+        "zipcode"=>$zipcode,
+        "tribal"=>$tribal
+      ];
+      $programlist = $this->telgooProcessStep($data,'GTWTEST',3);
+      $row=[];
+      $i=0;
+      foreach($programlist['data']['programs_list'] as $key){
+        $row[$i]=[
+          "id_program"=>$key['program_code'],
+          "name"=>$key['program_name']
+        ];
+        $i++;
+      }
+      // echo "<pre>";
+      // print_r($row);
+      echo json_encode($row);
+
+    }else{
+      $row = $this->enrollModel->getLifelinePrograms();
+      // echo "<pre>";
+      // print_r($row);
+      echo json_encode($row);
+    }
   }
 
   public function getagreementitems($states)
@@ -840,15 +1329,15 @@ class Enrolls extends Controller
     <td class="wrapper" style="font-family: sans-serif; font-size: 14px; vertical-align: top; box-sizing: border-box; padding: 20px;" valign="top"><table role="presentation" border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;" width="100%">
         <tr>
           <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;" valign="top"><p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">Hello!</p>
-            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">New Lifeline Order has been submitted </p>
+            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;">New Lifeline Order Received </p>
             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>First Name: </strong>' . $custmerData['first_name'] . '</p>
             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>Last Name: </strong>' . $custmerData['second_name'] . '</p>
             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>Email: </strong>' . $custmerData['email'] . '</p>
             <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>City: </strong>' . $custmerData['city'] . '</p>
 			<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>State: </strong>' . $custmerData['state'] . '</p>
-            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>Order ID: </strong>' . $custmerData['order_id'] . '</p>
+            <p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>Order/Enrollment ID: </strong>' . $custmerData['order_id'] . '</p>
 			
-			<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>Shockwave API Response: </strong>' . $custmerData['acp_status'] . '</p>
+			<p style="font-family: sans-serif; font-size: 14px; font-weight: normal; margin: 0; margin-bottom: 15px;"><strong>API Response: </strong>' . $custmerData['acp_status'] . '</p>
 			</td>
         </tr>
       </table>
@@ -870,15 +1359,47 @@ class Enrolls extends Controller
     $mail->Port       = 587;                                 // TCP port to connect to
     //Recipients
     $mail->setFrom('lifeline@galaxydistribution.com', 'Galaxy Lileline Orders');
-    $mail->addAddress('orders@galaxylifeline.com');
-    //$mail->addAddress('lifeline@goknows.com');
+    //$mail->addAddress('orders@galaxylifeline.com');
+    $mail->addAddress('currutia@gotruewireless.com');
     //$mail->addCC('jparker@galaxydistribution.com'); 
     //$mail->addCC('currutia44@gmail.com');      // Add a recipient
-    //$mail->addBCC('fhans87@aol.com');
-    $mail->isHTML(true);                                  // Set email format to HTML
-    $mail->Subject = 'A new Galaxy lifeline order has been submitted';
+    $mail->addBCC('xneriox@gmail.com');
+    $mail->isHTML(true); 
+    switch($custmerData['ETC']){
+      case "GTW":
+        $company = "GoTrueWireless";
+        break;
+      case "NAL":
+        $company = "National Relief Telecom";
+        break;
+      case "AMBT":
+        $company = "American Broadband";
+        break;
+      default:
+        $company = "Demo-GoTrueWirelessNRT";  // Set email format to HTML
+        break;
+    }                        // Set email format to HTML
+    $mail->Subject = 'New Lifeline Order from ' . $company;
     $mail->Body    = $message;
     $mail->CharSet = 'UTF-8';
     $mail->send();
   }
+
+    public function curl_get_file_contents($url) {
+    $ch = curl_init($url);
+
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+
+    $data = curl_exec($ch);
+
+    if (curl_errno($ch)) {
+        throw new Exception('cURL error: ' . curl_error($ch));
+    }
+
+    curl_close($ch);
+
+    return $data;
+}
 }
