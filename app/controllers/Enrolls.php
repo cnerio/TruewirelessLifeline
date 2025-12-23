@@ -147,13 +147,13 @@ class Enrolls extends Controller
         "utms"=>$utms
         
       ];
-      $check = $this->telgooProcessStep($data,'GTWTEST',1);
+      $check = $this->telgooProcessStep($data,'GTW',1);
       if($check['msg']=="Success"){
         $data['enrollment_id'] = $check['data']['enrollment_id'];
         $data['is_tribal'] = $check['data']['is_tribal'];
         $data['powered']="GTW";
       }else{
-        $check = $this->telgooProcessStep($data,'NALTEST',1);
+        $check = $this->telgooProcessStep($data,'NAL',1);
         if($check['msg']=="Success"){
           $data['enrollment_id'] = $check['data']['enrollment_id'];
            $data['is_tribal'] = $check['data']['is_tribal'];
@@ -266,7 +266,7 @@ class Enrolls extends Controller
             $customerId = $this->genCustomerId($data, $lastId);
             $data['customer_id'] = $customerId;
             $this->enrollModel->updateCusId($lastId, $customerId, 'lifeline_records');
-            $addressValidation = $this->telgooProcessStep($data,"GTWTEST",2);
+            $addressValidation = $this->telgooProcessStep($data,$data['ETC'],2);
             file_put_contents("stepLog.txt", "Telgoo Enrollment\n", FILE_APPEND);
             if($addressValidation['msg']=="Success"){
               file_put_contents("stepLog.txt", "Telgoo Enrollment Success", FILE_APPEND);
@@ -388,15 +388,16 @@ class Enrolls extends Controller
         file_put_contents("stepLog.txt", "Agreement Data Saved\n", FILE_APPEND);
         $row2 = $this->enrollModel->getCustomerData($data['customer_id']);
         //echo json_encode($initialData);
-        if($row2[0]['ETC']=="GTW" or $row2[0]['ETC']=="NAL"){
-          $this->telgooProcessStep($row2[0], "TEST",4);
+        $etc=$row2[0]['ETC'];
+        if($etc=="GTW" or $etc=="NAL"){
+          $this->telgooProcessStep($row2[0],$etc,4);
           file_put_contents("stepLog.txt", "Telgoo Step 4 \n", FILE_APPEND);
           $isTribal=$row2[0]['tribal']=="Y"?1:0;
-          $plan=$this->enrollModel->getTGPackages($row2[0]['state'],$row2[0]['ETC'],$isTribal);
+          $plan=$this->enrollModel->getTGPackages($row2[0]['state'],$etc,$isTribal);
           $row2[0]['plan_id']=$plan[0]['packageId'];
-          $customer = $this->telgooProcessStep($row2[0], "TEST",6);
+          $customer = $this->telgooProcessStep($row2[0], $etc,6);
           file_put_contents("stepLog.txt", "Telgoo Step 6\n", FILE_APPEND);
-          $this->uploadTGDocs($data['customer_id'],$row2[0]['order_id']);
+          $this->uploadTGDocs($data['customer_id'],$row2[0]['order_id'],$etc);
           file_put_contents("stepLog.txt", "Telgoo Upload Docs\n", FILE_APPEND);
           file_put_contents("stepLog.txt", json_encode($customer)."\n", FILE_APPEND);
           if($customer['msg']=="Success"){
@@ -592,7 +593,7 @@ class Enrolls extends Controller
     $this->view("enrolls/compress",$data);
   }
 
-  public function uploadTGDocs($customer_id,$enrollmentId){
+  public function uploadTGDocs($customer_id,$enrollmentId,$etc){
     $files = $this->enrollModel->getAllFiles($customer_id);
     file_put_contents("stepLog.txt", json_encode($files)."\n", FILE_APPEND);
     //$folder = $_SERVER['DOCUMENT_ROOT'].'/TruewirelessLifeline/public/uploads/';
@@ -627,7 +628,7 @@ class Enrolls extends Controller
             "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
             "proof_category" => "GA_PROOF"
           ];
-          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
+          $customer = $this->telgooProcessStep($saveFiles, $etc,7);
           
         }else if($file['type_doc'] == "ID"){
           $imageData = $this->curl_get_file_contents($file['filepath']);
@@ -643,7 +644,7 @@ class Enrolls extends Controller
             "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
             "proof_category" => "ID_PROOF"
           ];
-          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
+          $customer = $this->telgooProcessStep($saveFiles, $etc,7);
         }
       }
     }
@@ -1301,7 +1302,7 @@ class Enrolls extends Controller
         "zipcode"=>$zipcode,
         "tribal"=>$tribal
       ];
-      $programlist = $this->telgooProcessStep($data,'GTWTEST',3);
+      $programlist = $this->telgooProcessStep($data,$etc,3);
       $row=[];
       $i=0;
       foreach($programlist['data']['programs_list'] as $key){
