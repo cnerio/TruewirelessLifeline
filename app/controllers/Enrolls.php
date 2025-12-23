@@ -595,12 +595,23 @@ class Enrolls extends Controller
   public function uploadTGDocs($customer_id,$enrollmentId){
     $files = $this->enrollModel->getAllFiles($customer_id);
     file_put_contents("stepLog.txt", json_encode($files)."\n", FILE_APPEND);
-    $folder = $_SERVER['DOCUMENT_ROOT'].'/TruewirelessLifeline/public/uploads/';
+    //$folder = $_SERVER['DOCUMENT_ROOT'].'/TruewirelessLifeline/public/uploads/';
+    $folder = $_SERVER['DOCUMENT_ROOT'].'/public/uploads/';
     file_put_contents("stepLog.txt", $folder."\n", FILE_APPEND);
     //echo __DIR__."/../";
+    $priority = [
+      'POB' => 1, // GA_PROOF
+      'ID'  => 2  // ID_PROOF
+    ];
+    usort($files, function($a, $b) use ($priority) {
+        $aPriority = $priority[$a['type_doc']] ?? 99;
+        $bPriority = $priority[$b['type_doc']] ?? 99;
+
+        return $aPriority <=> $bPriority;
+    });
     if($files){
       foreach($files as $file){
-        if($file['type_doc'] == "ID"){
+        if($file['type_doc'] == "POB"){
           $imageData = $this->curl_get_file_contents($file['filepath']);
           $filename = basename($file['filepath']);
           $filePath = $folder.$customer_id.'/'. $filename;
@@ -614,11 +625,11 @@ class Enrolls extends Controller
           $saveFiles = [
             "enrollment_id" => $enrollmentId,
             "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
-            "proof_category" => "ID_PROOF"
+            "proof_category" => "GA_PROOF"
           ];
           $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
           
-        }else if($file['type_doc'] == "POB"){
+        }else if($file['type_doc'] == "ID"){
           $imageData = $this->curl_get_file_contents($file['filepath']);
           $filename = basename($file['filepath']);
           $filePath = $folder.$customer_id.'/'. $filename;
@@ -630,7 +641,7 @@ class Enrolls extends Controller
           $saveFiles = [
             "enrollment_id" => $enrollmentId,
             "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
-            "proof_category" => "GA_PROOF"
+            "proof_category" => "ID_PROOF"
           ];
           $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
         }
