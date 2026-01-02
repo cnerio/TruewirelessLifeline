@@ -393,8 +393,9 @@ class Enrolls extends Controller
           $this->telgooProcessStep($row2[0],$etc,4);
           file_put_contents("stepLog.txt", "Telgoo Step 4 \n", FILE_APPEND);
           $isTribal=$row2[0]['tribal']=="Y"?1:0;
-          $plan=$this->enrollModel->getTGPackages($row2[0]['state'],$etc,$isTribal);
-          $row2[0]['plan_id']=$plan[0]['packageId'];
+          //$plan=$this->enrollModel->getTGPackages($row2[0]['state'],$etc,$isTribal);
+          $planId=$this->getTgPackages($row2[0]['zipcode'],$etc,$row2[0]['tribal'],$data['customer_id']);
+          $row2[0]['plan_id']=$planId;
           $customer = $this->telgooProcessStep($row2[0], $etc,6);
           file_put_contents("stepLog.txt", "Telgoo Step 6\n", FILE_APPEND);
           $this->uploadTGDocs($data['customer_id'],$row2[0]['order_id'],$etc);
@@ -626,7 +627,8 @@ class Enrolls extends Controller
           $saveFiles = [
             "enrollment_id" => $enrollmentId,
             "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
-            "proof_category" => "GA_PROOF"
+            "proof_category" => "GA_PROOF",
+            "customer_id" => $customer_id
           ];
           $customer = $this->telgooProcessStep($saveFiles, $etc,7);
           
@@ -642,7 +644,8 @@ class Enrolls extends Controller
           $saveFiles = [
             "enrollment_id" => $enrollmentId,
             "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
-            "proof_category" => "ID_PROOF"
+            "proof_category" => "ID_PROOF",
+            "customer_id" => $customer_id
           ];
           $customer = $this->telgooProcessStep($saveFiles, $etc,7);
         }
@@ -655,50 +658,42 @@ class Enrolls extends Controller
     //echo json_encode($customer);
   }
 
-  public function test($customer_id,$enrollmentId){
-    $files = $this->enrollModel->getAllFiles($customer_id);
-    $folder = $_SERVER['DOCUMENT_ROOT'].'/TruewirelessLifeline/public/uploads/';
-    //echo __DIR__."/../";
-    if($files){
-      foreach($files as $file){
-        if($file['type_doc'] == "ID"){
-          $imageData = $this->curl_get_file_contents($file['filepath']);
-          $filename = basename($file['filepath']);
-          $filePath = $folder.$customer_id.'/'. $filename;
-          $finfo = finfo_open(FILEINFO_MIME_TYPE);
-          $mimeType = finfo_file($finfo, $filePath);
-          finfo_close($finfo);
-          //$filename = basename($fileData['filepath']);
-          $base64Img = base64_encode($imageData);
-          $saveFiles = [
-            "enrollment_id" => $enrollmentId,
-            "proof_file" => 'data:' . $mimeType . ';base64,' . $base64Img,
-            "proof_category" => "ID_PROOF"
-          ];
-          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
-        }else if($file['type_doc'] == "POB"){
-          $imageData = $this->curl_get_file_contents($file['filepath']);
-          $filename = basename($file['filepath']);
-          $filePath = $folder.$customer_id.'/'. $filename;
-          $finfo = finfo_open(FILEINFO_MIME_TYPE);
-          $mimeType = finfo_file($finfo, $filePath);
-          finfo_close($finfo);
-          //$filename = basename($fileData['filepath']);
-          $base64Img = base64_encode($imageData);
-          $saveFiles = [
-            "enrollment_id" => $enrollmentId,
-            "proof_file" => 'data:' . $mimeType . ';base64,' . base64_encode($base64Img),
-            "proof_category" => "GA_PROOF"
-          ];
-          $customer = $this->telgooProcessStep($saveFiles, "TEST",7);
-        }
+  public function getTgPackages($zipcode,$etc,$is_tribal,$customer_id){
+    $data = [
+      "zipcode" => $zipcode,
+      "tribal" => $is_tribal,
+      "customer_id" => $customer_id
+    ];
+    $plans = $this->telgooProcessStep($data, $etc,5);
+    $planId = null;
+    $searchCode = ($is_tribal == "Y")? 179:178;
+
+    foreach ($plans['data'] as $item) {
+      if ($item['plan_code'] == $searchCode) {
+        $planId = $item['plan_id'];
+        break;
       }
     }
-    // echo "<pre>";
-    // echo json_encode($saveFiles);
-    // echo "<br>";
-    // echo "<img src='data:" . $mimeType . ";base64," . $base64Img . "' alt='Compressed Image'>";
-    //echo json_encode($customer);
+    return $planId;
+  }
+
+  public function test($zipcode,$etc){
+    $data = [
+      "zipcode"=>$zipcode,
+      "tribal"=>"N",
+      "customer_id"=>12345
+    ];
+    $plans = $this->telgooProcessStep($data, $etc,5);
+    $planId = null;
+    $searchCode = 178;
+
+    foreach ($plans['data'] as $item) {
+      if ($item['plan_code'] == $searchCode) {
+        $planId = $item['plan_id'];
+        break;
+      }
+    }
+    echo $planId;
   }
 
   public function setApiCredentials($etc,$data){
@@ -842,7 +837,6 @@ class Enrolls extends Controller
             "action"=> "plan_list",
             "zip_code"=> $data['zipcode'],
             "enrollment_type"=> "LIFELINE",
-            "plan_id"=> "",
             "agent_id"=> "ewebsiteapi",
             "external_transaction_id"=> "",
             "source"=> "WEBSITE",

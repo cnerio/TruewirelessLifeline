@@ -15,7 +15,7 @@
     <div class="container py-4 py-lg-5">
        
         <div class="text-muted d-flex justify-content-between align-items-center pt-3">
-            <p class="mb-0">Copyright © 2025 True Wireless | <a href="https://www.gotruewireless.com/PrivacyPolicy.php" target="_blank" rel="noopener noreferrer nofollow">
+            <p class="mb-0">Copyright © <span id="year"></span> True Wireless | <a href="https://www.gotruewireless.com/PrivacyPolicy.php" target="_blank" rel="noopener noreferrer nofollow">
   Privacy Policy
 </a> | <a href="https://gotruewireless.com/TermsConditions.php" target="_blank" rel="noopener noreferrer nofollow">
   Terms of Service
@@ -44,4 +44,5 @@
   <script src="<?php echo URLROOT; ?>/js/jquery.mask.js"></script>
   <script src="<?php echo URLROOT; ?>/js/moment.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script>document.getElementById('year').appendChild(document.createTextNode(new Date().getFullYear()))</script>
 
