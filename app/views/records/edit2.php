@@ -67,7 +67,7 @@
 						</div>
 						<div class="col-md-9">
 							<div class="row mb-3">
-								<div class="col-md-6">
+								<div class="col-md-4">
 									<div class="card set-height">
 										<div class="card-body">
 											<h4 class="card-title pb-2">Documents </h4>
@@ -87,8 +87,66 @@
 										</div>
 									</div>
 								</div>
-								
-								<div class="col-md-6">
+								<div class="col-md-4">
+									<div class="card set-height">
+										<div class="card-body">
+											<h4 class="card-title pb-2">Actions</h4>
+											<div id="order_area">
+												<?php
+												if ($data['order_id'] > 0 && $data['order_id'] != 999) { ?>
+													Check NLAD Status
+													<button id="checknlad" data-id_order="<?php echo $data['id']; ?>" type="button" class="btn btn-primary" onclick="runChecknlad()">Check</button>
+													<div id="checkingOrderSpinner">
+														<span class="loader"></span>
+													</div>
+													<br>
+													<div class="form-check">
+														<input class="form-check-input" type="checkbox" value="" id="defaultCheck1" onclick="selectDefaultCheck1()">
+														<label class="form-check-label" for="defaultCheck1">
+															re-submit order
+														</label>
+													</div>
+													<br>
+													<div class="alert alert-danger" role="alert" id="actions_error">Error checking NLAD Status</div>
+													<p id="newOrderIdText">
+													<h5></h5>
+													</p>
+												<?php
+												} else if ($data['order_id'] == 999) { ?>
+													<p>Unable to process</p>
+												<?php } else {
+												?>
+
+													<button id="createOrder" data-id_order="<?php echo $data['customer_id']; ?>" type="button" class="btn btn-primary">Create Order</button>
+													<br>
+													<div id="resCreateOrder" class="pt-3 pb-3"></div>
+
+
+													<button onclick="updateOrderId()" data-id_order="<?php echo $data['id']; ?>" type="button" class="btn btn-warning">Unable to process</button>
+													<div id="creatingOrderSpinner">
+														<br><br>
+														<span class="loader"></span>
+													</div>
+													<br><br>
+													<div class="alert alert-success" role="alert" id="actions_success">Success</div>
+													<div class="alert alert-danger" role="alert" id="actions_error">Error creating order</div>
+													<p id="newOrderIdText">
+													<h5></h5>
+													</p>
+												<?php
+												}
+												?>
+											</div>
+
+											<!--<div id="consent_area" class="py-3">
+							
+							Send ACP Consent Link: <button id="c_sms" type="button" class="btn btn-primary">via SMS</button> <button id="c_email" type="button" class="btn btn-primary">via Email</button>
+							</div>-->
+
+										</div>
+									</div>
+								</div>
+								<div class="col-md-4">
 									<div class="card set-height">
 										<div class="card-body">
 											<ul class="list-unstyled list-inline">
@@ -180,7 +238,7 @@
 												<div class="nav nav-tabs" id="nav-tab" role="tablist">
 													<a class="nav-item nav-link active" id="nav-internal-tab" data-bs-toggle="tab" href="#internal-update" role="tab" aria-controls="internal_update" aria-selected="true">Internal Notes</a>
 													<!-- <a class="nav-item nav-link" id="nav-contact-tab" data-bs-toggle="tab" href="#sms" role="tab" aria-controls="sms" aria-selected="false">SMS</a> -->
-													<a class="nav-item nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#logs" role="tab" aria-controls="email" aria-selected="false">API Log</a>
+													<a class="nav-item nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#logs" role="tab" aria-controls="email" aria-selected="false">Showckwave Log</a>
 												</div>
 											</nav>
 											<div class="tab-content" id="myTabContent">
@@ -764,547 +822,4 @@
 			})
 
 			$("#send_internal").click(function() {
-				event.preventDefault();
-
-				var customer_id = $("#customer_id").val();
-				var id_user = $("#user_id").val();
-				var username = $("#user_name").val();
-				var note = $("#internal").val();
-
-				var parameter = {
-					"customer_id": customer_id,
-					"id_user": id_user,
-					"user_name":username,
-					"internal": note,
-				}
-				console.log(parameter);
-				$.ajax({
-					url: urlroot + '/saveNote',
-
-					type: "POST",
-
-					data: parameter,
-
-					success: function(data) {
-						console.log(data);
-						var html_head = "";
-						var myObj = JSON.parse(data);
-						if (myObj.response == 'OK') {
-							$("#communication-result").html(success_response)
-							getNotes(customer_id);
-						} else {
-							$("#communication-result").html(fail_response)
-						}
-						setTimeout(function() {
-							$("#communication-result").html('')
-						}, 5000);
-						$("#internal").val('');
-					}
-				});
-			})
-
-			$("#assign-agent").click(function() {
-				event.preventDefault();
-
-				var id_order = $("#id_order").val();
-
-				var user_selected = $("#staff-select option:selected").val();
-				var user_email = $("#staff-select option:selected").attr('user-email');
-
-
-				var parameter = {
-					"id_order": id_order,
-					"tookstaff": user_selected,
-					"user_email": user_email,
-				}
-				console.log(parameter);
-				$.ajax({
-					url: urlroot + '/assignStaff',
-
-					type: "POST",
-
-					data: parameter,
-
-					success: function(data) {
-						var html_head = "";
-						var myObj = JSON.parse(data);
-						if (myObj.response == 'OK') {
-							$("#staff-result").html(success_response)
-							getNotes(customer_id);
-						} else {
-							$("#staff-result").html(fail_response)
-						}
-					}
-				});
-			})
-
-			$("#submit-status").click(function() {
-				event.preventDefault();
-
-				var id_order = $("#id_order").val();
-				var username = $("#username").val();
-				var order_status = $("#order_status option:selected").val();
-
-				var parameter = {
-					"id_order": id_order,
-					"order_status": order_status,
-				}
-				console.log(parameter);
-				$.ajax({
-					url: urlroot + '/changeStatus',
-
-					type: "POST",
-
-					data: parameter,
-
-					success: function(data) {
-						var html_head = "";
-						var myObj = JSON.parse(data);
-						if (myObj.response == 'OK') {
-							$("#status-result").html(success_response)
-							$("#refresh-status").text(order_status);
-						} else {
-							$("#status-result").html(fail_response)
-						}
-
-						setTimeout(() => {
-							$("#status-result").html("");
-						}, 5000);
-					}
-				});
-			})
-
-
-			$("#formRecordEdit").submit(function(event) {
-				event.preventDefault();
-
-				let frm = new FormData();
-				frm.append("firstname_edit", $("#firstname_edit").val());
-				frm.append("lastname_edit", $("#lastname_edit").val());
-				frm.append("email_edit", $("#email_edit").val());
-				frm.append("dob_edit", $("#dob_edit").val());
-				frm.append("phone_edit", $("#phone_edit").val());
-				frm.append("ssn_edit", $("#ssn_edit").val());
-				frm.append("address1_edit", $("#address1_edit").val());
-				frm.append("address2_edit", $("#address2_edit").val());
-				frm.append("city_edit", $("#city_edit").val());
-				frm.append("state_edit", $("#state_edit").val());
-				frm.append("zipcode_edit", $("#zipcode_edit").val());
-				frm.append("id", $("#leadId").val());
-
-				fetch(urlroot + "/updateRecord", {
-						method: "POST",
-						body: frm
-					}).then((response) => response.text())
-					.then((data) => {
-
-						let dataa = JSON.parse(data);
-						console.log(dataa);
-
-						let organization = $("#organization").val();
-
-						if (dataa.status != false) {
-							$("#demographics-card").html("");
-							$("#demographics-card").html(`
-						<h4 class="card-title pb-2">Demographics <a href="" id="editBtn" data-toggle="modal" data-target="#modalEditRecord"><i class="fa fa-pencil"></i></a></h4>
-						<p><b>First Name: </b> ${dataa.record.first_name}</p>
-						<p><b>Last Name:</b> ${dataa.record.second_name}</p>
-						<p><b>Email:</b> ${dataa.record.email}</p>
-						<p><b>DOB:</b> ${dataa.record.dob}</p>
-						<p><b>Contact Phone:</b> ${dataa.record.phone_number}</p>
-						<p><b>Last 4 SSN:</b> ${dataa.record.ssn}</p>
-						<p><b>Address:</b> ${dataa.record.address1 + " " + dataa.record.address2 + "," + dataa.record.city + "," + dataa.record.state + "," + dataa.record.zipcode}</p>
-						<p><b>Organization:</b> ${organization}</p>
-					`);
-							$("#update-record-result").html(success_response)
-						} else {
-							$("#update-record-result").html(fail_response)
-						}
-
-						setTimeout(() => {
-							$("#update-record-result").html("");
-						}, 5000);
-					})
-
-			});
-
-			$(".closeRecordEditModal").click(function() {
-				$("#update-record-result").html("")
-			});
-
-			$("#formAddNote").submit(function(event) {
-				event.preventDefault();
-
-				addInternalNote();
-				// console.log($("#internalNote").val());
-			});
-
-			$(".closeAddNoteModal").click(function() {
-				$("#defaultCheck1").prop("checked", false)
-			});
-
-		});
-
-		function updatePBefore() {
-			let value = $("#pBeforeSelect").val();
-			let frm = new FormData();
-			frm.append("field", "program_before");
-			frm.append("program_before", value);
-			frm.append("id", $("#leadId").val());
-
-			fetch(urlroot + "/updateRecordInput", {
-					method: "POST",
-					body: frm
-				}).then((response) => response.text())
-				.then((data) => {
-					let dataa = JSON.parse(data);
-					if (dataa.status != false) {
-						$("#pBefore").html("");
-						$("#pBefore").html(`
-					<p id="pBefore"><b>Program Before: </b><span>${value}</span><i style="cursor: pointer;" class="fa fa-pencil ml-1" onclick="editPBefore()"></i></p>
-				`);
-					} else {
-						console.log("Error updating program before field")
-					}
-				})
-		};
-
-		function updatePBenefit() {
-			let value = $("#pBenefitSelect").val();
-			let textValue = $("#pBenefitSelect option:selected").text();
-			let frm = new FormData();
-			frm.append("field", "program_benefit");
-			frm.append("program_benefit", value);
-			frm.append("id", $("#leadId").val());
-
-			fetch(urlroot + "/updateRecordInput", {
-					method: "POST",
-					body: frm
-				}).then((response) => response.text())
-				.then((data) => {
-					let dataa = JSON.parse(data);
-					if (dataa.status != false) {
-						$("#pBenefit").html("");
-						$("#pBenefit").html(`
-					<p id="pBenefit"><b>Program Benefit: </b><span>${textValue}</span><i style="cursor: pointer;" class="fa fa-pencil ml-1" onclick="editPBenefit()"></i></p>
-				`);
-					} else {
-						console.log("Error updating program benefit field")
-					}
-				})
-		}
-
-		function editPBenefit() {
-
-			let lastPBenefitValue = $("#pBenefit span").text();
-			fetch(urlroot + "/getPrograms").then((response) => {
-					if (response.ok) {
-						return response.text();
-					}
-					throw new Error('Something went wrong');
-				})
-				.then((data) => {
-					let programs = JSON.parse(data);
-
-					$("#pBenefit").html("");
-					$("#pBenefit").html(`<b>Program Benefit: <i style="cursor: pointer" class="fa fa-times" aria-hidden="true" onclick="dismissPBenefitEdit()"></i></b><br/><select id="pBenefitSelect" class="form-select" onchange="updatePBenefit()"></select>`);
-					programs.forEach((p) => {
-						if (p.name == lastPBenefitValue) {
-							$("#pBenefitSelect").append(`
-						<option selected value="${p.code}">${p.name}</option>	
-					`);
-						} else {
-							$("#pBenefitSelect").append(`
-						<option value="${p.code}">${p.name}</option>
-					`);
-						}
-					})
-
-				})
-				.catch((error) => {
-					console.log(error)
-				});
-		}
-
-		function editPBefore() {
-			let lastPBeforeValue = $("#pBefore span").text();
-			$("#pBefore").html("");
-			$("#pBefore").html(`<b>Program Before: <i style="cursor: pointer" class="fa fa-times" aria-hidden="true" onclick="dismissPBeforeEdit()"></i></b><br/><select id="pBeforeSelect" class="form-select" onchange="updatePBefore()"></select>`);
-			if (lastPBeforeValue == "YES") {
-				$("#pBeforeSelect").append(`
-				<option selected value="YES">YES</option>
-				<option value="NO">NO</option>	
-			`);
-			} else {
-				$("#pBeforeSelect").append(`
-				<option value="YES">YES</option>
-				<option selected value="NO">NO</option>	
-			`);
-			}
-		}
-
-		function dismissPBenefitEdit() {
-			let value = $("#pBenefitSelect").val();
-			let textValue = $("#pBenefitSelect option:selected").text();
-			$("#pBenefit").html("");
-			$("#pBenefit").html(`
-			<p id="pBenefit"><b>Program Benefit: </b><span>${textValue}</span><i style="cursor: pointer;" class="fa fa-pencil ml-1" onclick="editPBenefit()"></i></p>
-		`);
-		}
-
-		function dismissPBeforeEdit() {
-			let value = $("#pBeforeSelect").val();
-			$("#pBefore").html("");
-			$("#pBefore").html(`
-			<p id="pBefore"><b>Program Before: </b><span>${value}</span><i style="cursor: pointer;" class="fa fa-pencil ml-1" onclick="editPBefore()"></i></p>
-		`);
-		}
-
-		function addSource() {
-
-			fetch(urlroot + "/getSources").then((response) => {
-					if (response.ok) {
-						return response.text();
-					}
-					throw new Error('Something went wrong');
-				})
-				.then((data) => {
-					let dataa = JSON.parse(data);
-					let sources = dataa.sources;
-					$("#acpSource").html("");
-					$("#acpSource").html(`<b>Source: <i style="cursor: pointer" class="fa fa-times" aria-hidden="true" onclick="dismissAddSource()"></i></b><br/><select id="addSourceSelect" class="form-control" onchange="updateSource()" value=""></select>`);
-					$("#addSourceSelect").append(`
-				<option selected disabled value="">Select source</option>
-			`);
-					sources.forEach((s) => {
-						if (s.source != "" && s.source != null) {
-							$("#addSourceSelect").append(`
-						<option value="${s.source}">${s.source}</option>
-					`);
-						}
-					})
-
-				})
-				.catch((error) => {
-					console.log(error)
-				});
-		}
-
-		function dismissAddSource() {
-			let value = $("#addSourceSelect").val();
-			$("#acpSource").html("");
-			$("#acpSource").html(`
-			<p id="acpSource"><b>Source: </b><i style="cursor: pointer;" class="fa fa-plus ml-1" onclick="addSource()"></i></p>
-		`);
-		}
-
-		function updateSource() {
-			let value = $("#addSourceSelect").val();
-			let frm = new FormData();
-			frm.append("field", "source");
-			frm.append("source", value);
-			frm.append("id", $("#leadId").val());
-
-			fetch(urlroot + "/updateRecordInput", {
-					method: "POST",
-					body: frm
-				}).then((response) => response.text())
-				.then((data) => {
-					let dataa = JSON.parse(data);
-					if (dataa.status != false) {
-						$("#acpSource").html("");
-						$("#acpSource").html(`
-					<p><b>Source:</b> ${value} </p>
-				`);
-					} else {
-						console.log("Error updating program benefit field")
-					}
-				})
-		}
-
-		function addInternalNote() {
-			event.preventDefault();
-
-			var success_response = '<div class="alert alert-success" role="alert">Success</div>';
-			var fail_response = '<div class="alert alert-danger" role="alert">Error, something is missing</div>';
-
-			// var id_order = $("#id_order").val();
-			// var id_user = $("#userid_active").val();
-			// var username = $("#username").val();
-			// var note = $("#internalNote").val();
-
-			// var parameter = {
-			// 	"id_order": id_order,
-			// 	"id_user": id_user,
-			// 	"user_name": username,
-			// 	"internal": note,
-			// }
-
-			var customer_id = $("#customer_id").val();
-				var id_user = $("#user_id").val();
-				var username = $("#user_name").val();
-				var note = $("#internalNote").val();
-
-				var parameter = {
-					"customer_id": customer_id,
-					"id_user": id_user,
-					"user_name":username,
-					"internal": note,
-				}
-			console.log(parameter);
-			$.ajax({
-				url: urlroot + '/saveNote',
-
-				type: "POST",
-
-				data: parameter,
-
-				success: function(data) {
-					console.log(data);
-					var html_head = "";
-					var myObj = JSON.parse(data);
-					if (myObj.response == 'OK') {
-						$("#add-internal-note").html(success_response);
-						createOrderTest3(customer_id);
-						setTimeout(() => {
-							$("#add-internal-note").html("");
-						}, 5000);
-						$('#modalAddNote').modal('toggle');
-						$("#defaultCheck1").prop("checked", false);
-						getNotes(customer_id);
-					} else {
-						$("#add-internal-note").html(fail_response)
-					}
-					$("#internalNote").val('');
-				}
-			});
-		}
-
-		function createOrderTest3(customer_id) {
-			$("#creatingOrderSpinner").show();
-			//var id_order = $("#id_order").val();
-			$.ajax({
-				url: urlroot + 'shockwaveProcess/'+customer_id,
-
-				type: "GET",
-
-				dataType: "json",
-
-				success: function(data) {
-
-					$("#creatingOrderSpinner").hide();
-
-					//let str = JSON.stringify(data);
-					//let strJSON = JSON.parse(str);
-
-					let myObj = JSON.parse(data);
-
-					console.log(myObj);
-
-					if (myObj.order_id > 0) {
-						$("#actions_error").hide();
-						$("#newOrderID").html(`<b>Order ID:</b> ${myObj.order_id}`)
-						$("#order_area").html(`Check NLAD Status <button id="checknlad" data-id_order="${myObj.order_id}" type="button" class="btn btn-primary" onclick="runChecknlad()">Check</button>
-				<div id="checkingOrderSpinner">
-						<span class="loader"></span>
-					</div>
-					<br>
-					<div class="form-check">
-						<input class="form-check-input" type="checkbox" value="" id="defaultCheck1" onclick="selectDefaultCheck1()">
-						<label class="form-check-label" for="defaultCheck1">
-							re-submit order
-						</label>
-				</div>`);
-						$("#newOrderIdText").html(`<h5>New Order ID: ${myObj.order_id} </h5>`);
-						$("#newOrderIdText").show();
-						$("#checkingOrderSpinner").hide();
-						$("#newACPStatus").html(`<b>ACP Status:</b> ${myObj.acp_status}`);
-					} else {
-						console.log("Error");
-						$("#actions_error").show();
-						// $("#order_area").html('MESSAGE:'+myObj.StatusText)
-					}
-
-				}
-			});
-		}
-
-		function runChecknlad() {
-
-			$("#checkingOrderSpinner").show();
-			var id_order = $("#leadId").val();
-			$.ajax({
-				url: urlroot + '/checknlad',
-
-				type: "POST",
-
-				// dataType: "json",
-
-				data: {
-					id_order: id_order
-				},
-
-				success: function(data) {
-
-					$("#checkingOrderSpinner").hide();
-
-					let str = JSON.stringify(data);
-					let strJSON = JSON.parse(str);
-
-					let myObj = JSON.parse(strJSON);
-
-					console.log(myObj);
-
-					// if(myObj.SubscriberId > 0){
-
-					// console.log(myObj.SubscriberId)
-					if (myObj.Status == "Success") {
-						$("#actions_error").hide();
-						$("#newACPStatus").html(`<b>Message:</b> ${myObj.Message}`);
-					} else {
-						console.log("Error");
-						$("#actions_error").show();
-					}
-					// $("#order_area").html('ACP Status:'+myObj.AcpStatus)
-					// }
-
-				}
-			});
-		}
-
-		function selectDefaultCheck1() {
-			// $('#modalAddNote').modal('toggle');
-			$('#modalAddNote').modal('show');
-			// $('#modalAddNote').modal('hide');
-		};
-
-		function updateOrderId() {
-
-			$("#creatingOrderSpinner").show();
-
-			let frm = new FormData();
-			frm.append("acp_status", "unable to process");
-			frm.append("order_id", 999);
-			frm.append("id", $("#leadId").val());
-
-			fetch(urlroot + "/updateUnableToProcess", {
-					method: "POST",
-					body: frm
-				}).then((response) => response.text())
-				.then((data) => {
-
-					$("#creatingOrderSpinner").hide();
-
-					let dataa = JSON.parse(data);
-					if (dataa.status != false) {
-						$("#actions_error").hide();
-
-						$("#actions_success").show();
-
-					} else {
-						console.log("Error updating order id");
-						$("#actions_error").show();
-					}
-				})
-		}
-	</script>
+				event.preventDefa

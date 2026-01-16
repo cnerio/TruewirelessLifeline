@@ -65,7 +65,7 @@ class Record {
 	}
 	
 	public function getProgram(){
-		$this->db->query("SELECT * FROM lifeline_programs");
+		$this->db->query("SELECT * FROM lifeline_programs WHERE active = 1");
 		$this->db->execute();
 		$row = $this->db->resultSet();
 		return $row;

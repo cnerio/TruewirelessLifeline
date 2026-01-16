@@ -390,8 +390,8 @@ class Enrolls extends Controller
         //echo json_encode($initialData);
         $etc=$row2[0]['ETC'];
         if($etc=="GTW" or $etc=="NAL"){
-          $this->telgooProcessStep($row2[0],$etc,4);
-          file_put_contents("stepLog.txt", "Telgoo Step 4 \n", FILE_APPEND);
+          $nlad = $this->telgooProcessStep($row2[0],$etc,4);
+          file_put_contents("stepLog.txt", "Telgoo Step 4 \n".json_encode($nlad), FILE_APPEND);
           $isTribal=$row2[0]['tribal']=="Y"?1:0;
           //$plan=$this->enrollModel->getTGPackages($row2[0]['state'],$etc,$isTribal);
           $planId=$this->getTgPackages($row2[0]['zipcode'],$etc,$row2[0]['tribal'],$data['customer_id']);
@@ -801,6 +801,7 @@ class Enrolls extends Controller
         ]);
         break;
       case 4:
+        //nladd
         $response = $this->TG5Api->eligibilityCheck([
               "enrollment_id"=> $data['enrollment_id'],
               "first_name"=> $data['first_name'],

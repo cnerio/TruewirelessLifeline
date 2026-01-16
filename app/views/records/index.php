@@ -381,13 +381,13 @@
 						//console.log(value.type_id);
 						if (program) {
 							if (value.type_id == program) {
-								$("#program_benefit").append(`<option value="${value.id_program}" selected>${value.name}</option>`);
+								$("#program_benefit").append(`<option value="${value.code}" selected>${value.name}</option>`);
 							} else {
-								$("#program_benefit").append(`<option value="${value.id_program}">${value.name}</option>`);
+								$("#program_benefit").append(`<option value="${value.code}">${value.name}</option>`);
 							}
 
 						} else {
-							$("#program_benefit").append(`<option value="${value.id_program}">${value.name}</option>`);
+							$("#program_benefit").append(`<option value="${value.code}">${value.name}</option>`);
 						}
 					});
 				}
@@ -399,7 +399,7 @@
     function getProgramName($program) {
 		$prog = "";
 			switch ($program) {
-				case '100000':
+				case 'FPH':
 					$prog = "Federal public housing";
 					break;
 				case '100001':
@@ -408,10 +408,10 @@
 				case '100002':
 					$prog = "Household income";
 					break;
-				case '100004':
+				case 'MEDIC':
 					$prog = "Medical assistance (medicaid)";
 					break;
-				case '100006':
+				case 'SSI':
 					$prog = "Supplemental security income (SSI)";
 					break;
 				case '100008':
@@ -429,8 +429,8 @@
 				case '100013':
 					$prog = "Program Eligibility Approved by State Administrator";
 					break;
-				case '100014':
-					$prog = "veteran's pension";
+				case 'VPSBP':
+					$prog = "Veteran's Pension or Survivors Benefit Programs";
 					break;
 				case '110000':
 					$prog = "School Lunch/Breakfast Program*";
@@ -446,6 +446,9 @@
 					break;
 				case '110004':
 					$prog = "Special Supplemental Nutrition Program for Women Infants, and Children (WIC)";
+					break;
+				case 'SNAP':
+					$prog = "Supplemental Nutrition Assistance Program (Food Stamps or SNAP)";
 					break;
 
 

@@ -61,7 +61,7 @@
 			if($_SERVER['REQUEST_METHOD']=='POST'){
 		//if($_POST){
 			//die('Submit');
-			$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 			$page = (isset($_POST['page']) && !empty($_POST['page']))?$_POST['page']:1;
 			$data = [
 				'action'=>trim($_POST['action']),
@@ -245,7 +245,7 @@
 
     public function getNotes(){
 		if($_SERVER['REQUEST_METHOD']=='POST'){
-			$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 			$customer_id = $_POST['customer_id'];
 			$row = $this->recordsModel->getNotes($customer_id);
 			echo json_encode($row);
@@ -254,7 +254,7 @@
 
     public function getResponses(){
 		if($_SERVER['REQUEST_METHOD']=='POST'){
-			$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 			$customer_id = $_POST['customer_id'];
 			$row = $this->recordsModel->getResponses($customer_id);
 			echo json_encode($row);
@@ -263,13 +263,13 @@
 
 	public function updateRecord(){
 		if($_SERVER['REQUEST_METHOD']=='POST'){
-			$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 			$data=[
 				"first_name"=>trim(ucfirst(strtolower($_POST['firstname_edit']))),
 				"second_name"=>trim(ucfirst(strtolower($_POST['lastname_edit']))),
 				"email"=>trim(strtolower($_POST['email_edit'])),
 				"dob"=>trim($_POST['dob_edit']),
-				"phone"=>trim($_POST['phone_edit']),
+				"phone_number"=>trim($_POST['phone_edit']),
 				"ssn"=>trim($_POST['ssn_edit']),
 				"address1"=>trim($_POST['address1_edit']),
 				"address2"=>trim($_POST['address2_edit']),
@@ -287,7 +287,7 @@
 
 	public function changeStatus(){
 		if($_SERVER['REQUEST_METHOD']=='POST'){
-			$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 			$id = $_POST['id_order'];
 			$order_status = $_POST['order_status'];
 			//$order = $this->recordsModel->getOrder($orderId);
@@ -312,7 +312,7 @@
 	public function saveNote(){
 		
 		if($_SERVER['REQUEST_METHOD']=='POST'){
-			$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 			$orderId = $_POST['customer_id'];
 			$msg = $_POST['internal'];
 			$id_user = $_POST['id_user'];

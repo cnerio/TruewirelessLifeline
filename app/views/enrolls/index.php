@@ -446,7 +446,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                     </div>
                                 </div>
                             </div>
-                            <div class="row">
+                            <!-- <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <h6>What type of phone do you currently use?</h6>
@@ -463,7 +463,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="row mb-2">
                                 <div class="col-md-12">
                                     <!-- <span class="btn btn-lg btn-primary" id="uploadBtn">Click to upload your government ID <span class="requiredmark">*</span></span> -->
