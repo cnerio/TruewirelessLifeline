@@ -93,6 +93,7 @@
 															<th width="50">State</th>
 															<th width="68">Zipcode</th>
 															<th>Order ID</th>
+															<th>Order Status</th>
 															<th>Program Benefit</th>
 															<th>Created At</th>
 															<th>Actions</th>
@@ -109,7 +110,17 @@
 															<td><input id="state" type="text" class="form-control grid-filter"></td>
 															<td><input id="zipcode" type="text" class="form-control grid-filter"></td>
 															<td><input id="order_id" type="text" class="form-control grid-filter"></td>
-															<td><select id="program_benefit" type="text" class="form-control grid-filter">
+															<td>
+																<select id="order_status" class="form-select grid-filter">
+																	<option value="">Please select</option>
+																	<option value="Pending" >Pending</option>
+																	<option value="Complete">Complete</option>
+																	<option value="Duplicate">Duplicate</option>
+																	<option value="DNM">DNM</option>
+																	<option value="Test">Test</option>
+																</select>
+															</td>
+															<td><select id="program_benefit" class="form-select grid-filter">
 																	<option value="">Select...</option>
 																</select>
 															</td>
@@ -220,7 +231,7 @@
 
 						console.log(resultObj);
 						var row;
-						var cell, cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10, cell11, cell12, cell13, cell14, cell15;
+						var cell, cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10, cell11, cell12, cell13, cell14, cell15,cell16;
 						var f, cnum;
 						var i = 0;
 						var c = 1;
@@ -243,9 +254,9 @@
 							cell10 = row.insertCell(10);
 							cell11 = row.insertCell(11);
 							cell12 = row.insertCell(12);
-							//cell13 = row.insertCell(13);
+							cell13 = row.insertCell(13);
 							//cell14 = row.insertCell(14);
-							cell15 = row.insertCell(13);
+							cell15 = row.insertCell(14);
 
 							cell.innerHTML = cnum;
 							cell1.innerHTML = v.customer_id;
@@ -258,9 +269,9 @@
 							cell8.innerHTML = v.state;
 							cell9.innerHTML = v.zipcode;
 							cell10.innerHTML = v.order_id;
-							cell11.innerHTML = getProgramName(v.program_benefit);
-							cell12.innerHTML = v.created_at;
-							//cell13.innerHTML = v.source;
+							cell11.innerHTML = v.order_status
+							cell12.innerHTML = getProgramName(v.program_benefit);
+							cell13.innerHTML = v.created_at;
 							//cell14.innerHTML = v.tookstaff;
 							cell15.innerHTML = '<div class="pull-right"><a href="'+urlroot+'/edit/' + v.customer_id + '" class="btn btn-outline-dark btn-sm" type="button"><i class="fa fa-pencil"></i>&nbsp;Edit</a></div>';
 							/*cell14.innerHTML = '<div class="pull-right"><button class="btn btn-outline-primary btn-sm modalView" type="button" style="margin-right: 10px;" data-idorder="'+v.id+'"><i class="fa fa-eye"></i>&nbsp;View</button><a href="https://secure-order-forms.com/surgephone/acp_landings/dashboard/records/edit/'+v.id+'" class="btn btn-outline-dark btn-sm" type="button"><i class="fa fa-pencil"></i>&nbsp;Edit</a></div>';
@@ -294,9 +305,9 @@
 						document.getElementById("state").value = where[7];
 						document.getElementById("zipcode").value = where[8];
 						document.getElementById("order_id").value = where[9];
-						document.getElementById("program_benefit").value = where[10];
-						document.getElementById("date_create").value = where[11];
-						//document.getElementById("source").value = where[12];
+						document.getElementById("order_status").value = where[10];
+						document.getElementById("program_benefit").value = where[11];
+						document.getElementById("date_create").value = where[12];
 						//document.getElementById("agent").value = where[13];
 					}
 
@@ -318,6 +329,7 @@
 			var state = $("#state").val().trim();
 			var zipcode = $("#zipcode").val().trim();
 			var order_id = $("#order_id").val().trim();
+			var order_status = $("#order_status").val().trim();
 			var program_benefit = $("#program_benefit option:selected").val();
 			var created_at = $("#date_create").val().trim();
 			//var source = $("#source").val().trim();
@@ -336,6 +348,7 @@
 				state,
 				zipcode,
 				order_id,
+				order_status,
 				program_benefit,
 				created_at,
 				//source,

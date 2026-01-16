@@ -12,7 +12,7 @@ class Users extends Controller{
 
     public function adduser(){
         if($_SERVER['REQUEST_METHOD']=="POST"){
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            //$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
             //$confirmPassword = trim($_POST['addconfirm_password']);
             $data=[
                 "name"=>trim(ucfirst(strtolower($_POST['addname']))),
@@ -41,7 +41,7 @@ class Users extends Controller{
 
        public function updateuser(){
         if($_SERVER['REQUEST_METHOD']=="POST"){
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            //$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
             //$confirmPassword = trim($_POST['addconfirm_password']);
             $data=[
                 "name"=>trim(ucfirst(strtolower($_POST['editname']))),
@@ -73,7 +73,7 @@ class Users extends Controller{
 
     public function removeUser(){
         if($_SERVER['REQUEST_METHOD']=="POST"){
-            $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+            // $_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
             //$confirmPassword = trim($_POST['addconfirm_password']);
             $data=[
                 "id"=>$_POST['id'],
@@ -253,7 +253,7 @@ class Users extends Controller{
 
     public function getUser(){
         if($_SERVER['REQUEST_METHOD']=='POST'){
-            $_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+           // $_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
             $id=$_POST['id'];
             $result = $this->userModel->getUserById($id);
             echo json_encode($result);
@@ -264,7 +264,7 @@ class Users extends Controller{
 			if($_SERVER['REQUEST_METHOD']=='POST'){
 		//if($_POST){
 			//die('Submit');
-			$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
 			$page = (isset($_POST['page']) && !empty($_POST['page']))?$_POST['page']:1;
 			$data = [
 				'action'=>trim($_POST['action']),

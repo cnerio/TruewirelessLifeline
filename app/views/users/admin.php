@@ -233,7 +233,7 @@ label.error{
                     <div class="modal-body">
                         Do you want to delete the user <b id="nameDeleteUser"></b>?
                         <input type="hidden" name="idusersDelete" id="idusersDelete">
-                        <input type="hidden" name="acttion" value="deleteuserUp">
+                        <input type="hidden" name="action" value="deleteuserUp">
                         <input type="hidden" id="idlog" name="idlog" value='<?php echo $id_user;  ?>'>
                     </div>
                     <div class="modal-footer">
@@ -312,7 +312,7 @@ label.error{
                         cell1.innerHTML = v.name;
                         cell2.innerHTML = v.email;
                         cell3.innerHTML = (v.rol==1)?"Admin User":"Regular User";
-                        cell4.innerHTML = (v.rol==1)?'<span class="badge text-bg-success">Active</span>':'<span class="badge text-bg-danger">Inactive</span>';
+                        cell4.innerHTML = (v.active==1)?'<span class="badge text-bg-success">Active</span>':'<span class="badge text-bg-danger">Inactive</span>';
                         //cell13.innerHTML = v.source;
                         //cell14.innerHTML = v.tookstaff;
                         cell5.innerHTML = '<div class="pull-right"><button class="btn btn-outline-dark btn-sm editUser" data-user="'+v.id+'" data-bs-toggle="modal" data-bs-target="#EditUserModal"><i class="fa fa-pencil"></i>&nbsp;Edit</button><button data-user="'+v.id+'" data-bs-toggle="modal" data-bs-target="#DeleteUsersModal" class="btn btn-outline-danger btn-sm deleteUser" type="button"><i class="fa fa-close"></i>&nbsp;Delete</a></div>';
@@ -419,6 +419,7 @@ $("#gridBody").on('click','.deleteUser',function(){
 
     $("#updateUser").on('click',function(e){
         console.log("updateUser")
+        $("#updateResult").html('');
         e.preventDefault();
         
         if($('#formEdit_users').valid()){
@@ -441,6 +442,7 @@ $("#gridBody").on('click','.deleteUser',function(){
     })
 
     $("#deleteok").on('click',function(){
+        $("#msjresusersDelete").html('');
         var userId = $("#idusersDelete").val();
         $.post(urlroot+'/removeUser', { id: userId }, function(response) {
         var myObj = JSON.parse(response)
@@ -513,7 +515,7 @@ $("#gridBody").on('click','.deleteUser',function(){
     $('#formUserAdd')[0].reset();
     var validator = $("#formUserAdd").validate();
 validator.resetForm();
-    $("#msjresusersAdd"),html('')
+    $("#msjresusersAdd").html('')
 })
 
 $('#EditUserModal').on('hidden.bs.modal', function () {
