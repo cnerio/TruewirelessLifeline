@@ -39,7 +39,8 @@ class Record {
 	}
 	
 	public function updateOrder($data){
-		$this->db->updateQuery("lifeline_records",$data,"id=:id");
+		$row = $this->db->updateQuery("lifeline_records",$data,"id=:id");
+		return $row;
 	}
 	
 	public function countRegisters($search,$firstload){
@@ -156,6 +157,10 @@ class Record {
 		$row = $this->db->resultSet();
 		return $row;
 	}
+
+	// public function saveStaff($data){
+	// 	$this->db->updateOrder("lifeline_records",$data);
+	// }
 
 
 }

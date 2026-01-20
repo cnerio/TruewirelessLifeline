@@ -243,6 +243,27 @@
 		/*}*/
 	}
 
+	public function assignStaff(){
+		if($_SERVER['REQUEST_METHOD']=='POST'){
+			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);
+			$data = [
+				"id"=>$_POST['id_order'],
+				"tookstaff"=>$_POST['tookstaff']
+			];
+			$row = $this->recordsModel->updateOrder($data);
+			if($row){
+				$response = array (
+				 'response' => 'OK', 
+			 	);
+			}else{
+				$response = array (
+				 'response' => 'ERROR', 
+				);
+			 	};
+			echo json_encode($response);
+		}
+	}
+
     public function getNotes(){
 		if($_SERVER['REQUEST_METHOD']=='POST'){
 			//$_POST= filter_input_array(INPUT_POST,FILTER_SANITIZE_STRING);

@@ -130,7 +130,8 @@
 									</div>
 								</div>
 							</div>
-							<!-- <div class="row mb-3">
+							   <?php if($_SESSION['rol']==1){ ?>
+							<div class="row mb-3">
 								<div class="col-md-12">
 									<div class="card">
 										<div class="card-body">
@@ -170,7 +171,8 @@
 										</div>
 									</div>
 								</div>
-							</div> -->
+							</div>
+							<?php } ?>
 							<!--/**************INTERNAL NOTES*************/-->
 							<div class="card">
 								<div class="card-body">
@@ -816,6 +818,7 @@
 					"id_order": id_order,
 					"tookstaff": user_selected,
 					"user_email": user_email,
+					"customer_id": customer_id,
 				}
 				console.log(parameter);
 				$.ajax({
@@ -830,6 +833,8 @@
 						var myObj = JSON.parse(data);
 						if (myObj.response == 'OK') {
 							$("#staff-result").html(success_response)
+							var Note = user_selected + " was assigned to this record.";
+							addNotes(Note) 
 							getNotes(customer_id);
 						} else {
 							$("#staff-result").html(fail_response)
@@ -1121,6 +1126,48 @@
 					}
 				})
 		}
+		function addNotes(Note) {
+
+			var customer_id = $("#customer_id").val();
+				var id_user = $("#user_id").val();
+				var username = $("#user_name").val();
+				var note = Note;
+
+				var parameter = {
+					"customer_id": customer_id,
+					"id_user": id_user,
+					"user_name":username,
+					"internal": note,
+				}
+			console.log(parameter);
+			$.ajax({
+				url: urlroot + '/saveNote',
+
+				type: "POST",
+
+				data: parameter,
+
+				success: function(data) {
+					console.log(data);
+					var html_head = "";
+					var myObj = JSON.parse(data);
+					if (myObj.response == 'OK') {
+						$("#add-internal-note").html(success_response);
+						//createOrderTest3(customer_id);
+						setTimeout(() => {
+							$("#add-internal-note").html("");
+						}, 5000);
+						$('#modalAddNote').modal('toggle');
+						$("#defaultCheck1").prop("checked", false);
+						getNotes(customer_id);
+					} else {
+						$("#add-internal-note").html(fail_response)
+					}
+					$("#internalNote").val('');
+				}
+			});
+		}
+
 
 		function addInternalNote() {
 			event.preventDefault();
