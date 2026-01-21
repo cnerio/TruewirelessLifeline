@@ -75,7 +75,7 @@ class Enroll {
     }
 
     public function getPackages($company){
-        $this->db->query("SELECT * FROM packages WHERE active=1 and provider=:company;");
+        $this->db->query("SELECT * FROM packages WHERE active=1 and ETC=:company;");
         $this->db->bind(":company",$company);
         $result = $this->db->resultSet();
         return $result;
