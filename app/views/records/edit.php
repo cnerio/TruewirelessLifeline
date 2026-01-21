@@ -55,6 +55,8 @@
 										<p id="newOrderID"><b>Order ID:</b> <?php echo $data['order_id']; ?></p>
 										<p id="newACPStatus"><b>NLAD Status:</b> <?php echo $data['acp_status']; ?></p>
 									<?php } ?>
+									<p><b>ETC:</b> <?php echo ($data['ETC']=="GTW")?"True Wireless":$data['ETC']; ?></p>
+									
 								</div>
 							</div>
 							<!-- <div class="card">

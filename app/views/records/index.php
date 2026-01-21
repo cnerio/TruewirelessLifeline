@@ -415,16 +415,25 @@
 				case 'FPH':
 					$prog = "Federal public housing";
 					break;
-				case '100001':
-					$prog = "Food stamps";
+				case '100000':
+					$prog = "Federal public housing";
 					break;
+				// case '100001':
+				// 	$prog = "Food stamps";
+				// 	break;
 				case '100002':
 					$prog = "Household income";
 					break;
 				case 'MEDIC':
 					$prog = "Medical assistance (medicaid)";
 					break;
+				case '100004':
+					$prog = "Medical assistance (medicaid)";
+					break;
 				case 'SSI':
+					$prog = "Supplemental security income (SSI)";
+					break;
+				case '100006':
 					$prog = "Supplemental security income (SSI)";
 					break;
 				case '100008':
@@ -445,6 +454,9 @@
 				case 'VPSBP':
 					$prog = "Veteran's Pension or Survivors Benefit Programs";
 					break;
+				case '100014':
+					$prog = "Veteran's Pension or Survivors Benefit Programs";
+					break;
 				case '110000':
 					$prog = "School Lunch/Breakfast Program*";
 					break;
@@ -461,6 +473,9 @@
 					$prog = "Special Supplemental Nutrition Program for Women Infants, and Children (WIC)";
 					break;
 				case 'SNAP':
+					$prog = "Supplemental Nutrition Assistance Program (Food Stamps or SNAP)";
+					break;
+				case '100001':
 					$prog = "Supplemental Nutrition Assistance Program (Food Stamps or SNAP)";
 					break;
 
