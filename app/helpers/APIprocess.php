@@ -17,7 +17,7 @@ Class APIprocess{
         $credentials=$enrollModel->getCredentials($company);
         $processData['customer_id']=$customerId;
         $packages = $enrollModel->getPackages($company);
-    
+        file_put_contents("stepLog.txt", json_encode($packages)."\n", FILE_APPEND);
         $createResponse=create_shockwave_account($customerData[0],$credentials[0],$packages);
         $processData['process_status']="addSubscriberOrder API";
         $enrollModel->updateData($processData,'lifeline_records');

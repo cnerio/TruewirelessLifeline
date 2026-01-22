@@ -536,7 +536,7 @@ function lifeline_payload($data, $credentials,$packages)
 	$result = [];
 	$deviceType = ($data['phone_type'])?$data['phone_type']:"Android";
 	foreach ($packages as $item) {
-		if($item['provider']=="AMBT"){
+		//if($item['ETC']=="AMBT"){
 			if ($item['devicetype'] == $deviceType && $item['state'] == $data['state']) {
 			//$result[] = [
 				$packageID = $item['packageId'];
@@ -547,7 +547,7 @@ function lifeline_payload($data, $credentials,$packages)
 					$packageID = $item['packageId'];
 					$providerId = $item['providerId'];
 			}
-		}
+		//}
 	}
 
 	$jsonString = $data['utms'];

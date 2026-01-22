@@ -172,9 +172,9 @@ class Enrolls extends Controller
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       file_put_contents("stepLog.txt", "start first step\n");
-    $secret = "6LeVbyYsAAAAALRrpPD-3ut44yhQEbX4maS9iizb";
-    $responseKey = $_POST['g-recaptcha-response'];
-    $remoteip = $_SERVER['REMOTE_ADDR'];
+      $secret = "6LeVbyYsAAAAALRrpPD-3ut44yhQEbX4maS9iizb";
+      $responseKey = $_POST['g-recaptcha-response'];
+      $remoteip = $_SERVER['REMOTE_ADDR'];
       
       $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://www.google.com/recaptcha/api/siteverify");
@@ -202,7 +202,7 @@ class Enrolls extends Controller
         $data['msg']= 'CAPTCHA verification failed';
         file_put_contents("stepLog.txt", "CAPTCHA verification failed\n", FILE_APPEND);
       }else{
-        file_put_contents("stepLog.txt", "Captacha succeee\n", FILE_APPEND);
+        file_put_contents("stepLog.txt", "Captacha succees\n", FILE_APPEND);
         $phonenumber = preg_replace('/[^0-9]/', '', $_POST['phone']);
         $dob = date("m/d/Y", strtotime($_POST['dobM'] . "/" . $_POST['dobD'] . "/" . $_POST['dobY']));
         if(isset($_POST['customer_id'])){
@@ -266,14 +266,20 @@ class Enrolls extends Controller
             $customerId = $this->genCustomerId($data, $lastId);
             $data['customer_id'] = $customerId;
             $this->enrollModel->updateCusId($lastId, $customerId, 'lifeline_records');
-            $addressValidation = $this->telgooProcessStep($data,$data['ETC'],2);
-            file_put_contents("stepLog.txt", "Telgoo Enrollment\n", FILE_APPEND);
-            if($addressValidation['msg']=="Success"){
-              file_put_contents("stepLog.txt", "Telgoo Enrollment Success", FILE_APPEND);
+            if($data['ETC']=="AMBT"){
               $data['action']="insert";
               $data['status'] = "success";
+              file_put_contents("stepLog.txt", "Start AMBT Process \n".json_encode($nlad), FILE_APPEND);
             }else{
-              $data['status'] = "fail";
+              $addressValidation = $this->telgooProcessStep($data,$data['ETC'],2);
+              file_put_contents("stepLog.txt", "Telgoo Enrollment\n", FILE_APPEND);
+              if($addressValidation['msg']=="Success"){
+                file_put_contents("stepLog.txt", "Telgoo Enrollment Success", FILE_APPEND);
+                $data['action']="insert";
+                $data['status'] = "success";
+              }else{
+                $data['status'] = "fail";
+              }
             }
             
           } else {
@@ -389,6 +395,7 @@ class Enrolls extends Controller
         $row2 = $this->enrollModel->getCustomerData($data['customer_id']);
         //echo json_encode($initialData);
         $etc=$row2[0]['ETC'];
+        file_put_contents("stepLog.txt", "ETC:".$etc."\n", FILE_APPEND);
         if($etc=="GTW" or $etc=="NAL"){
           $nlad = $this->telgooProcessStep($row2[0],$etc,4);
           file_put_contents("stepLog.txt", "Telgoo Step 4 \n".json_encode($nlad), FILE_APPEND);
