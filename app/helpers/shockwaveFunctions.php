@@ -534,7 +534,7 @@ function lifeline_payload($data, $credentials,$packages)
 {
 
 	$result = [];
-	$deviceType = ($data['phone_type'])?$data['phone_type']:"Android";
+	$deviceType = (!empty($data['phone_type']))?$data['phone_type']:"Android";
 	foreach ($packages as $item) {
 		//if($item['ETC']=="AMBT"){
 			if ($item['devicetype'] == $deviceType && $item['state'] == $data['state']) {
@@ -546,6 +546,7 @@ function lifeline_payload($data, $credentials,$packages)
 			}else if ($item['devicetype'] == $deviceType && $item['state'] === 'All'){
 					$packageID = $item['packageId'];
 					$providerId = $item['providerId'];
+					break;
 			}
 		//}
 	}

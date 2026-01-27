@@ -200,14 +200,14 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                 <div class="col-md-12 pt-2">
                                     <h6>is this address permanent or temporary?</h6>
                                     <div class="form-check">
-
+                                        <label class="form-chack-label" for="typeAddress1">
                                         <input type="radio" name="typeAddress" id="typeAddres1" class="form-check-input" value="Permanent">
-                                        <label class="form-chack-label" for="typeAddress1">Permanent</label>
+                                        Permanent</label>
                                     </div>
                                     <div class="form-check">
-
+                                        <label class="form-chack-label" for="typeAddress2">
                                         <input type="radio" name="typeAddress" id="typeAddres2" class="form-check-input" value="Temporary">
-                                        <label class="form-chack-label" for="typeAddress2">Temporary</label>
+                                        Temporary</label>
                                     </div>
                                 </div>
                             </div>
@@ -469,7 +469,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                     <!-- <span class="btn btn-lg btn-primary" id="uploadBtn">Click to upload your government ID <span class="requiredmark">*</span></span> -->
                                     <span class="btn btn-lg btn-primary" id="uploadBtn">Click to upload your government ID</span>
                                     <br>
-                                    <span><b>Not Required</b></span>
+                                    <span><b>Required</b></span>
                                     <br>
                                     <label id="fileInputerror" style="display:none;" class="error" for="fileInput"></label>
                                     <input type="file" name="fileInput" id="fileInput" accept="image/*,application/pdf,.doc,.docx" capture="camera" style="display: none;" />
@@ -482,8 +482,8 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                     <!-- <span class="btn btn-lg btn-primary" id="uploadBtnpob">Click to upload your Proof of Benefit <span class="requiredmark">*</span></span> -->
                                     <span class="btn btn-lg btn-primary" id="uploadBtnpob">Click to upload your Proof of Benefit </span>
                                     <br>
-                                    <span><b>Not Required</b></span>
-                                    <!-- <br><label id="fileInputerror" style="display:none;" class="error" for="fileInput2"></label> -->
+                                    <span><b>Required</b></span>
+                                    <br><label id="fileInputerror2" style="display:none;" class="error" for="fileInput2"></label>
                                     <input type="file" name="fileInput2" id="fileInput2" accept="image/*,application/pdf,.doc,.docx" capture="camera" style="display: none;" />
                                     <div id="preview2"></div>
                                 </div>
@@ -532,7 +532,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                     </div>
                                 </div>
                             </div>
-                            <input type="hidden" id="customer_id" name="customer_id" value="">
+                            <input type="hidden" id="customer_id" name="customer_id" value="<?php echo $data['customer_id'] ?? NULL; ?>">
                             
                         </section>
                 </form>
@@ -774,9 +774,25 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                     //benefitProgram = (benefitProgram=="")?$("#eligibility_program").val():benefitProgram;
                     //console.log(base64String)
                     //console.log(pobbase64String)
-                    // if(base64String){
+                    if(!base64String && !pobbase64String){
+                        $("#fileInputerror").show()
+                        $("#fileInputerror").html('File ID and Proof of Benefit are required, you must upload your files')
+                        $("#fileInputerror2").show()
+                        $("#fileInputerror2").html('File ID and Proof of Benefit are required, you must upload your files')
+                        //$("#fileInputerror").html('File ID is required, you must upload your files')
+                    }else if(!base64String){
+                        $("#fileInputerror").show()
+                        $("#fileInputerror").html('File ID is required, you must upload your government ID')
+                    }else if(!pobbase64String){
+                        $("#fileInputerror2").show()    
+                        $("#fileInputerror2").html('Proof of Benefit is required, you must upload your proof of benefit')
+                        
+                    }else{
+                        
                         $("#fileInputerror").hide()
                         $("#fileInputerror").html("")
+                        $("#fileInputerror2").hide()
+                        $("#fileInputerror2").html("")
                         $.ajax({
                             url: "<?php echo URLROOT; ?>/enrolls/savestep2",
                             method: "POST",
@@ -811,12 +827,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                 alert("Error saving step " + currentIndex);
                             }
                         });
-                    // }else{
-                    //     $("#fileInputerror").show()
-                    //     //$("#fileInputerror").html('File ID and Proof of Benefit are required, you must upload your files')
-                    //     $("#fileInputerror").html('File ID is required, you must upload your files')
-                        
-                    // }
+                    }
 
                     
                 }

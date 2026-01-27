@@ -196,6 +196,7 @@ require APPROOT . '/views/inc/navbar.php';
                     <button id="submitform" type="Submit" class="btn btn-primary" value="">Check</button>
                     <input type="hidden" id="powered" name="powered" value="">
                     <input type="hidden" id="enrollment_id" name="enrollment_id" value="">
+                    <input type="hidden" id="customer_id" name="customer_id" value="">
                     <input type="hidden" id="is_tribal" name="is_tribal" value="">
                     <div id="response"></div>
                 </div>
@@ -293,6 +294,7 @@ $("#submitform").on("click",function(event){
                 $("#powered").val(resObj.powered);
                 $("#enrollment_id").val(resObj.enrollment_id);
                 $("#is_tribal").val(resObj.is_tribal);
+                $("#customer_id").val(resObj.customer_id);
                 //console.tab("resObj:",resObj);
                 //exit();
                 if(resObj.status=="success"){

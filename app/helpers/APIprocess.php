@@ -66,7 +66,8 @@ Class APIprocess{
               $enrollModel->updateData($processData,'lifeline_records');
                 $result=[
                   "status"=>"success",
-                  "msg"=>"Order Submitted and Consent file submitted"
+                  "msg"=>"Order Submitted and Consent file submitted",
+                  "order_id"=>$row[0]['order_id']
                 ];
               
             }else{

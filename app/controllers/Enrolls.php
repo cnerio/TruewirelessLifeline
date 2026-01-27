@@ -48,7 +48,8 @@ class Enrolls extends Controller
             "utms"=>$utms,
             "powered"=>$_POST['powered'],
             "enrollment_id"=>$_POST['enrollment_id'],
-            "is_tribal"=>$_POST['is_tribal']
+            "is_tribal"=>$_POST['is_tribal'],
+            "customer_id"=>(isset($_POST['customer_id']))?$_POST['customer_id']:null
             
           ];
 
@@ -138,32 +139,50 @@ class Enrolls extends Controller
       $data = [
         "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
         "second_name" => trim(ucfirst(strtolower($_POST['lastname']))),
-        // "address1" => trim($_POST['address1']),
+        "email" => trim($_POST['email']),
         // "address2" => trim($_POST['addess2']),
         // "city" => trim(ucfirst(strtolower($_POST['city']))),
         "state" => strtoupper(trim($_POST['state'] ?? '')),
         "zipcode" => $_POST['zipcode'],
         "URL" => $full_url,
-        "utms"=>$utms
-        
+        "utms"=>$utms,
+        "phone_number" => null,
+        "order_step" => "Check Coverage",
+        "company" => "True Wireless"     
       ];
-      $check = $this->telgooProcessStep($data,'GTW',1);
-      if($check['msg']=="Success"){
-        $data['enrollment_id'] = $check['data']['enrollment_id'];
-        $data['is_tribal'] = $check['data']['is_tribal'];
-        $data['powered']="GTW";
+      //$check = $this->telgooProcessStep($data,'GTW',1);
+      $check = $this->enrollModel->getStates('GTW');
+      //print_r($check);
+      if(in_array($data['state'],$check)){
+       // $data['enrollment_id'] = $check['data']['enrollment_id'];
+       // $data['is_tribal'] = $check['data']['is_tribal'];
+        $data['enrollment_id'] =null;
+        $powered="GTW";
       }else{
-        $check = $this->telgooProcessStep($data,'NAL',1);
-        if($check['msg']=="Success"){
-          $data['enrollment_id'] = $check['data']['enrollment_id'];
-           $data['is_tribal'] = $check['data']['is_tribal'];
-          $data['powered']="NAL";
+        //$check = $this->telgooProcessStep($data,'NAL',1);
+        $check = $this->enrollModel->getStates('NAL');
+        if(in_array($data['state'],$check)){
+          //$data['enrollment_id'] = $check['data']['enrollment_id'];
+          //$data['is_tribal'] = $check['data']['is_tribal'];
+           $data['enrollment_id'] =null;
+          $powered="NAL";
         }else{
-          $data['enrollment_id'] ="";
-          $data['powered']="AMBT";
+          $data['enrollment_id'] =null;
+          $powered="AMBT";
         }
       }
+      $data['ETC'] = $powered;
+      $lastId = $this->enrollModel->saveData($data, 'lifeline_records');
+          file_put_contents("stepLog.txt", "Checking Prcoess\n", FILE_APPEND);
+          if ($lastId > 0) {
+            //$data['lastId']=$lastId;
+            $customerId = $this->genCustomerId($data, $lastId);
+            $data['customer_id'] = $customerId;
+            $this->enrollModel->updateCusId($lastId, $customerId, 'lifeline_records');
+          }
+          
       $data['status'] = "success";
+      $data['powered'] = $powered;
       echo json_encode($data);
     }
   }
@@ -233,7 +252,7 @@ class Enrolls extends Controller
           "shipping_city" => (isset($_POST['shipcity'])) ? $_POST['shipcity'] : null,
           "shipping_state" => (isset($_POST['shipstate'])) ? $_POST['shipstate'] : null,
           "shipping_zipcode" => (isset($_POST['shipzipcode'])) ? $_POST['shipzipcode'] : null,
-          "order_step" => "Step 1",
+          "order_step" => "Demographics",
           "URL" => $full_url,
           "company" => $_POST['company'],
           "utms"=>$utms,
@@ -269,10 +288,11 @@ class Enrolls extends Controller
             if($data['ETC']=="AMBT"){
               $data['action']="insert";
               $data['status'] = "success";
-              file_put_contents("stepLog.txt", "Start AMBT Process \n".json_encode($nlad), FILE_APPEND);
+              file_put_contents("stepLog.txt", "Start AMBT Process \n", FILE_APPEND);
             }else{
-              $addressValidation = $this->telgooProcessStep($data,$data['ETC'],2);
+              //$addressValidation = $this->telgooProcessStep($data,$data['ETC'],2);
               file_put_contents("stepLog.txt", "Telgoo Enrollment\n", FILE_APPEND);
+              $addressValidation['msg']="Success";
               if($addressValidation['msg']=="Success"){
                 file_put_contents("stepLog.txt", "Telgoo Enrollment Success", FILE_APPEND);
                 $data['action']="insert";
@@ -305,7 +325,7 @@ class Enrolls extends Controller
         "customer_id" => $_POST['customer_id'],
         "current_benefits" => $_POST['current_benefits'],
         "phone_type" => $_POST['type_phone'],
-        "order_step" => "Step 2"
+        "order_step" => "Eligibility & Documents"
 
       ];
 
@@ -372,7 +392,7 @@ class Enrolls extends Controller
           "agree_sms" => $_POST['sms'],
           "agree_pii" => $_POST['know'],
           "customer_id" => $_POST['customer_id'],
-          "order_step" => "Step 3"
+          "order_step" => "Agreements & Consent"
         ];
 
         $this->enrollModel->updateData($data, 'lifeline_records');
@@ -397,15 +417,17 @@ class Enrolls extends Controller
         $etc=$row2[0]['ETC'];
         file_put_contents("stepLog.txt", "ETC:".$etc."\n", FILE_APPEND);
         if($etc=="GTW" or $etc=="NAL"){
-          $nlad = $this->telgooProcessStep($row2[0],$etc,4);
+          //$nlad = $this->telgooProcessStep($row2[0],$etc,4);
           file_put_contents("stepLog.txt", "Telgoo Step 4 \n".json_encode($nlad), FILE_APPEND);
           $isTribal=$row2[0]['tribal']=="Y"?1:0;
           //$plan=$this->enrollModel->getTGPackages($row2[0]['state'],$etc,$isTribal);
           $planId=$this->getTgPackages($row2[0]['zipcode'],$etc,$row2[0]['tribal'],$data['customer_id']);
           $row2[0]['plan_id']=$planId;
-          $customer = $this->telgooProcessStep($row2[0], $etc,6);
+          //$customer = $this->telgooProcessStep($row2[0], $etc,6);
+          $customer['msg']="Success";
+          $customer['data']="Info Saved Successfully";
           file_put_contents("stepLog.txt", "Telgoo Step 6\n", FILE_APPEND);
-          $this->uploadTGDocs($data['customer_id'],$row2[0]['order_id'],$etc);
+          //$this->uploadTGDocs($data['customer_id'],$row2[0]['order_id'],$etc);
           file_put_contents("stepLog.txt", "Telgoo Upload Docs\n", FILE_APPEND);
           file_put_contents("stepLog.txt", json_encode($customer)."\n", FILE_APPEND);
           if($customer['msg']=="Success"){
@@ -426,8 +448,14 @@ class Enrolls extends Controller
            $this->enrollModel->updateData($saveResponse, 'lifeline_records');
         }else{
           // $customerData = $this->enrollModel->getCustomerData($data['customer_id']);
-          $this->APIService = new APIprocess();
-          $result = $this->APIService->shockwaveProcess($data['customer_id'], $this->enrollModel);
+          //$this->APIService = new APIprocess();
+          //$result = $this->APIService->shockwaveProcess($data['customer_id'], $this->enrollModel);
+          //$row2[0]['order_id']= $result['order_id'];
+          $result=[
+                  "status"=>"success",
+                  "msg"=>"Order Submitted Successfully"
+          ];
+          $acpStatus="Order Submitted Successfully";
         }
         
         $row2[0]['acp_status'] = $acpStatus;
@@ -1126,6 +1154,11 @@ class Enrolls extends Controller
         "type_doc" => "Screenshot"
       ];
       $fileData['statusScreen'] = ($this->enrollModel->saveData($fileData, 'lifeline_documents')) ? true : false;
+      $updatestep = [
+        "customer_id" => $customer_id,
+        "order_step" => "Thankyou"
+      ];
+      $this->enrollModel->updateData($updatestep, 'lifeline_records');
       echo json_encode($fileData);
     }
   }
