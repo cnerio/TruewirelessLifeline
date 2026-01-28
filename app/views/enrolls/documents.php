@@ -1,6 +1,7 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
 <?php
 $apply = false;
+$powered = null;
 require APPROOT . '/views/inc/navbar.php';
 ?>
 <style>
@@ -24,7 +25,7 @@ require APPROOT . '/views/inc/navbar.php';
         </div>
     </div>
 </section>
-<section class="py-5 mt-5" id="uploadForm">
+<section class="py-5 mt-5" id="uploadSection">
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-8 offset-md-2">
@@ -52,7 +53,7 @@ require APPROOT . '/views/inc/navbar.php';
                     </div>
 
                     <button type="submit" class="btn btn-primary">Submit</button>
-                    <input type="hidden" name="order_id" id="order_id" value="<?php echo $data['orderId']; ?>">
+                    <input type="hidden" name="customer_id" id="customer_id" value="<?php echo $data['customer_id']; ?>">
                     <div id="response" class="mt-3 text-success"></div>
                 </form>
             </div>
@@ -229,7 +230,7 @@ require APPROOT . '/views/inc/navbar.php';
         const data = {
             identity_proof: identityBase64,
             benefit_proof: benefitBase64,
-            order_id: $("#order_id").val()
+            customer_id: $("#customer_id").val()
         };
 
         fetch('<?php echo URLROOT; ?>/enrolls/saveDocuments', {
@@ -241,7 +242,7 @@ require APPROOT . '/views/inc/navbar.php';
             })
             .then(res => res.json())
             .then(response => {
-                $("#uploadForm").hide();
+                $("#uploadSection").hide();
                 $("#thankyou").show();
                 //document.getElementById('response2').textContent = response.message || 'Upload successful!';
             })

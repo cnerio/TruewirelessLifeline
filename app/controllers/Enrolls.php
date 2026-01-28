@@ -482,10 +482,10 @@ class Enrolls extends Controller
         echo json_encode($result);
   }
 
-  public function getdocuments($orderId64=null){
+  public function getdocuments($customer_id=null){
 
     $data = [
-      "orderId"=>$orderId64
+      "customer_id"=>$customer_id
     ];
     
     $this->view('enrolls/documents',$data);
@@ -531,23 +531,23 @@ class Enrolls extends Controller
       $data = json_decode(file_get_contents('php://input'), true);
       //echo $data['order_id'];
       
-      $customerData = $this->enrollModel->getCustomerbyOrderId(trim($data['order_id']));
+      //$customerData = $this->enrollModel->getCustomerbyOrderId(trim($data['order_id']));
       //print_r($customerData);
-      $customerId=$customerData[0]['customer_id'];
+      // $customerId=$data['customer_id'];
       
-      if($customerData){
-        $idFile=$this->saveFiles($data['identity_proof'],$customerId,"ID");
-        if($idFile['status']){
-          $data['idStatusApi']=$this->sendDocuments($customerId,$data['order_id'],"ID");
-        }
-        $pobFile=$this->saveFiles($data['benefit_proof'],$customerId,"POB");
-        if($pobFile['status']){
-          $data['pobStatusApi']=$this->sendDocuments($customerId,$data['order_id'],"POB");
-        }
-      }else{
-        $data['idFileStatus']=$this->saveFiles($data['identity_proof'],$data['order_id'],"ID");
-        $data['pobFileStatus']=$this->saveFiles($data['benefit_proof'],$data['order_id'],"POB");
-      }
+      // if($customerData){
+      //   $idFile=$this->saveFiles($data['identity_proof'],$customerId,"ID");
+      //   if($idFile['status']){
+      //     $data['idStatusApi']=$this->sendDocuments($customerId,$data['order_id'],"ID");
+      //   }
+      //   $pobFile=$this->saveFiles($data['benefit_proof'],$customerId,"POB");
+      //   if($pobFile['status']){
+      //     $data['pobStatusApi']=$this->sendDocuments($customerId,$data['order_id'],"POB");
+      //   }
+      // }else{
+        $data['idFileStatus']=$this->saveFiles($data['identity_proof'],$data['customer_id'],"ID");
+        $data['pobFileStatus']=$this->saveFiles($data['benefit_proof'],$data['customer_id'],"POB");
+      //}
       $data["message"]="Files Upload Susccesfully";
       echo json_encode($data);
     }
