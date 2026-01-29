@@ -43,6 +43,54 @@
 		}
 	}
 
+	public function notifyDocuments(){
+		if($_SERVER['REQUEST_METHOD']=='POST'){
+			$data=[
+				"customer_id"=>$_POST['customer_id'],
+				"email"=>$_POST['email'],
+				"firstname"=>$_POST['firstname'],
+				"lastname"=>$_POST['lastname'],
+			];
+			if($data['email'] != "" && filter_var($data['email'], FILTER_VALIDATE_EMAIL)){
+				$customerName = $data['firstname'] . ' ' . $data['lastname'];
+				$applicationId = $data['customer_id'];
+				$uploadLink = "https://lifeline.truewireless.com/enrolls/getdocuments/" . $data['customer_id'];
+				$supportEmail = "support@truewireless.com";
+				//print_r($data);
+			 	//$to = "xneriox@gmail.com";
+				$subject = "Additional Documents Required to Complete Your Lifeline Application ";  
+				//$message = "Customer ID: " . $data['customer_id'] . "\n";
+				//$message .= "Customer Name: " . $data['first_name']." ".$data['second_name'] . "\n";
+				$message = "<div style='font-family: Arial, Helvetica, sans-serif; font-size:14px; color:#333;'><p>Hello <strong>{$customerName}</strong>,</p><p>Thank you for submitting your Lifeline application.We have successfully received your information.</p><p>To continue processing your application we still need the following documents:</p><ul>	<li>Proof of Identity (ID card, driver's license, passport)</li>	<li>Proof of Benefit (eligibility letter or benefit notice)</li></ul><p>Please upload the required documents using the secure link below: </p><p><a href='{$uploadLink}' style='display:inline-block;padding:12px 20px;background:#0d6efd;color:#ffffff;text-decoration:none;border-radius:4px;'>Upload Documents</a></p><p><strong>Important:</strong><br> Your application cannot be completed until all required documentation has been received.</p><p>If you have already submitted these documents, please disregard this message.</p><p>If you need assistance, contact us at <a href='mailto:{$supportEmail}'>{$supportEmail}</a>.</p><br><p>Kind regards,<br><strong>Lifeline Enrollment Team</strong><br>True Wireless<p></div>";
+  
+				$mailer = new PHPMailer_Lib();
+				$mail = $mailer->load();
+				$mail->SMTPDebug = 0;                                       // Enable verbose debug output
+				$mail->isSMTP();                                            // Set mailer to use SMTP
+				$mail->Host       = 'smtp-mail.outlook.com';            // Specify main and backup SMTP servers
+				$mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+				$mail->Username   = 'lifeline@galaxydistribution.com';                     // SMTP username
+				$mail->Password   = 'Life@2025$$Galaxy';                               // SMTP password
+				$mail->SMTPSecure = 'TLS/StartTLS';                                  // Enable TLS encryption, `ssl` also accepted
+				$mail->Port       = 587;  
+				$mail->setFrom('lifeline@galaxydistribution.com', 'Lifeline');
+				$mail->addAddress($data['email']);
+				//$mail->addCC('jparker@galaxydistribution.com'); 
+				//$mail->addCC('currutia44@gmail.com');      // Add a recipient
+				//$mail->addBCC('xneriox@gmail.com');
+				$mail->isHTML(true);
+				$mail->Subject = $subject;
+				$mail->Body = nl2br($message);
+				$mail->send();
+				$result="OK";
+			}else{
+				$result = "Fail";
+			}
+			$response = ["response"=>$result];
+			echo json_encode($response);
+		}
+	}
+
 	public function updateUnableToProcess(){
 		if($_SERVER['REQUEST_METHOD']=='POST'){
 			$data=[
@@ -112,11 +160,11 @@
 				
 					if(!empty($data['arrayCampos'][$index])){
 
-							if($count<=1){
-								$addWhere.=" ".$camposBase[$index]." LIKE '%".$data['arrayCampos'][$index]."%'";
-							}else{
-								$addWhere.=" and ".$camposBase[$index]." LIKE '%".$data['arrayCampos'][$index]."%'";
-							}
+if($count<=1){
+	$addWhere.=" ".$camposBase[$index]." LIKE '%".$data['arrayCampos'][$index]."%'";
+}else{
+	$addWhere.=" and ".$camposBase[$index]." LIKE '%".$data['arrayCampos'][$index]."%'";
+}
 
 
 					}

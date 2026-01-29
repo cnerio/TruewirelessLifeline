@@ -73,10 +73,10 @@
 									<div class="card set-height">
 										<div class="card-body">
 											<h4 class="card-title pb-2">Documents </h4>
-											<div>
+											<!-- <div>
 											
 												
-											</div>
+											</div> -->
                                             <?php
                                                 if(!empty($data['documents'])){
                                                     foreach($data['documents'] as $llfile){
@@ -84,8 +84,15 @@
 
                                                     echo '<p><b>'.$llfile['type_doc'].':</b> <a href="' . $llfile['filepath'] . '" target="_blank" style="font-size:12px;">View File</a></p>';
                                                 }
-                                                }
+                                                }else{
+													echo '<input id="notify-documents" type="button" class="btn btn-secondary" value="Notify to upload Documents"/>';
+												//echo '<div id="notify-documents-response"/><div>';
+												}
                                             ?>
+											
+										</div>
+										<div >
+										<div id="notify-documents-response"></div>
 										</div>
 									</div>
 								</div>
@@ -436,6 +443,7 @@
 						<input type="hidden" value="Addusernew" name="acttion">
 						<input type="hidden" id="idlogui" name="idlogui" value='<?php echo $_SESSION['user_id'];  ?>'>
 						<button type="submit" id="savenew" class="btn btn-primary">Save</button>
+						
 					</div>
 					<div style="padding: 13px;" id="msjresusersAdd">
 					</div>
@@ -726,6 +734,44 @@
 				})
 			})
 
+			$("#notify-documents").click(function() {
+				event.preventDefault();
+
+				var customer_id = $("#customer_id").val();
+				var email_edit = $("#email_edit").val();
+				//var user_name = $("#user_active").val();
+
+				var parameter = {
+					"customer_id": customer_id,
+					"email": email_edit,
+					"firstname": $("#firstname_edit").val(),
+					"lastname": $("#lastname_edit").val(),
+				}
+				console.log(parameter);
+				$.ajax({
+					url: urlroot + '/notifyDocuments',
+
+					type: "POST",
+
+					data: parameter,
+
+					success: function(data) {
+						console.log('Data received ' + data);
+						var myObj = JSON.parse(data);
+						if (myObj.response == 'OK') {
+							$("#notify-documents-response").html(success_response)
+							Note = "Documents request email sent to " + email_edit;
+							addNotes(Note);
+							getNotes(customer_id);
+						} else {
+							$("#notify-documents-response").html(fail_response)
+						}
+						setTimeout(function() {
+							$("#notify-documents-response").html('')
+						}, 5000);
+					}
+				});
+			})
 
 			$("#send_sms").click(function() {
 				event.preventDefault();
@@ -911,16 +957,16 @@
 						let organization = $("#organization").val();
 
 						if (dataa.status != false) {
-							$("#demographics-card").html("");
+					// 		$("#demographics-card").html("");
 							$("#demographics-card").html(`
 						<h4 class="card-title pb-2">Demographics <a href="" id="editBtn" data-toggle="modal" data-target="#modalEditRecord"><i class="fa fa-pencil"></i></a></h4>
-						<p><b>First Name: </b> ${dataa.record.first_name}</p>
-						<p><b>Last Name:</b> ${dataa.record.second_name}</p>
-						<p><b>Email:</b> ${dataa.record.email}</p>
-						<p><b>DOB:</b> ${dataa.record.dob}</p>
-						<p><b>Contact Phone:</b> ${dataa.record.phone_number}</p>
-						<p><b>Last 4 SSN:</b> ${dataa.record.ssn}</p>
-						<p><b>Address:</b> ${dataa.record.address1 + " " + dataa.record.address2 + "," + dataa.record.city + "," + dataa.record.state + "," + dataa.record.zipcode}</p>
+						<p><b>First Name: </b> ${ $("#firstname_edit").val()}</p>
+						<p><b>Last Name:</b> ${ $("#lastname_edit").val()}</p>
+						<p><b>Email:</b> ${ $("#email_edit").val()}</p>
+						<p><b>DOB:</b> ${ $("#dob_edit").val()}</p>
+						<p><b>Contact Phone:</b> ${ $("#phone_edit").val()}</p>
+						<p><b>Last 4 SSN:</b> ${ $("#ssn_edit").val()}</p>
+						<p><b>Address:</b> ${ $("#address1_edit").val() + " " + $("#address2_edit").val() + "," + $("#city_edit").val() + "," + $("#state_edit").val() + "," + $("#zipcode_edit").val()}</p>
 						<p><b>Organization:</b> ${organization}</p>
 					`);
 							$("#update-record-result").html(success_response)

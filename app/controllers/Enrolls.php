@@ -483,10 +483,28 @@ class Enrolls extends Controller
   }
 
   public function getdocuments($customer_id=null){
-
-    $data = [
-      "customer_id"=>$customer_id
-    ];
+    //echo $customer_id;
+    if(!empty($customer_id)){
+      $row2 = $this->enrollModel->getCustomerData($customer_id);
+      //print_r($row2);
+      if($row2){
+          $data = [
+          "customer_id"=>$customer_id,
+          "first_name"=>$row2[0]['first_name'],
+          "last_name"=>$row2[0]['second_name'],
+        ];
+      }else{
+        $data = [
+          "customer_id"=>0,
+          "msg"=>"Customer ID not found",
+        ];
+      }
+    }else{ 
+      $data = [
+        "customer_id"=>0,
+        "msg"=>"Customer ID is missing",
+      ];
+    }
     
     $this->view('enrolls/documents',$data);
   }
@@ -545,12 +563,60 @@ class Enrolls extends Controller
       //     $data['pobStatusApi']=$this->sendDocuments($customerId,$data['order_id'],"POB");
       //   }
       // }else{
+      if($data['identity_proof']){
         $data['idFileStatus']=$this->saveFiles($data['identity_proof'],$data['customer_id'],"ID");
+        $data['idFileName']=basename($data['idFileStatus']['filepath']);
+      }
+        
+      if($data['benefit_proof']){
         $data['pobFileStatus']=$this->saveFiles($data['benefit_proof'],$data['customer_id'],"POB");
+        $data['pobFileName']=basename($data['pobFileStatus']['filepath']);
+      }
       //}
+      $this->sendDocumentsEmail($data);
       $data["message"]="Files Upload Susccesfully";
       echo json_encode($data);
     }
+  }
+
+  public function sendDocumentsEmail($data){
+    //$_SERVER['DOCUMENT_ROOT'].'/public/uploads/'
+    $to = "xneriox@gmail.com";
+    $subject = "Document Submission for Customer ID: " . $data['customer_id'];  
+    $message = "Customer ID: " . $data['customer_id'] . "\n";
+    //$message .= "Customer Name: " . $data['first_name']." ".$data['second_name'] . "\n";
+    $message .= "Documents have been submitted successfully.\n";  
+    $mailer = new PHPMailer_Lib();
+    $mail = $mailer->load();
+    $mail->SMTPDebug = 0;                                       // Enable verbose debug output
+    $mail->isSMTP();                                            // Set mailer to use SMTP
+    $mail->Host       = 'smtp-mail.outlook.com';            // Specify main and backup SMTP servers
+    $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
+    $mail->Username   = 'lifeline@galaxydistribution.com';                     // SMTP username
+    $mail->Password   = 'Life@2025$$Galaxy';                               // SMTP password
+    $mail->SMTPSecure = 'TLS/StartTLS';                                  // Enable TLS encryption, `ssl` also accepted
+    $mail->Port       = 587;  
+    $mail->setFrom('lifeline@galaxydistribution.com', 'Lifeline');
+    $$mail->addAddress('currutia@gotruewireless.com');
+    //$mail->addCC('jparker@galaxydistribution.com'); 
+    //$mail->addCC('currutia44@gmail.com');      // Add a recipient
+    $mail->addBCC('xneriox@gmail.com');
+    $mail->isHTML(true);
+    $mail->Subject = $subject;
+    $mail->Body = nl2br($message);
+    $files = [
+        $data['idFileName'],
+        $data['pobFileName']
+    ];
+
+    foreach ($files as $file) {
+        $path = $_SERVER['DOCUMENT_ROOT'] . '/public/uploads/'. $data['customer_id'] . '/' . $file;
+        file_put_contents("stepLog.txt",  $path."\n", FILE_APPEND);
+        if (file_exists($path)) {
+            $mail->addAttachment($path);
+        }
+    }
+    $mail->send();
   }
 
   public function sendDocuments($customerId,$orderId,$fileType,$company){

@@ -13,6 +13,7 @@ require APPROOT . '/views/inc/navbar.php';
         border-radius: 5px;
     }
 </style>
+<?php if($data['customer_id']){ ?>
 <section class="py-5 mt-5" id="thankyou" style="display: none;">
     <div class="container mt-5">
         <div class="row">
@@ -29,10 +30,12 @@ require APPROOT . '/views/inc/navbar.php';
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-8 offset-md-2">
-                <h3 class="mb-3">Upload Required Documents</h3>
+                <h2 class="mb-3">Hello <?php echo $data['first_name'].' '.$data['last_name']; ?>,</h2>
+                <p class="text-muted">
+                    We're received your application for our Lifeline program. To proceed with your enrollment, we need to verify your eligibility by collecting some important documents.</p>
 
                 <p class="text-muted">
-                    To complete your enrollment, please upload the following documents. Make sure the images are clear and all information is visible. Accepted formats: JPG, PNG, PDF.
+                    Please upload the following documents. Make sure the images are clear and all information is visible. Accepted formats: JPG, PNG, PDF.
                 </p>
 
                 <form id="uploadForm">
@@ -60,6 +63,20 @@ require APPROOT . '/views/inc/navbar.php';
         </div>
     </div>
 </section>
+<?php } else { ?>
+<section class="py-5 mt-5">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <h3 class="mb-3">Error</h3>
+                <p class="text-muted">
+                    Invalid access.<?php echo $data['msg']; ?> Please start your enrollment process again. <a href="<?php echo URLROOT; ?>">Click here to begin.</a>
+                </p>
+            </div>
+        </div>  
+    </div>
+</section>
+<?php } ?>
 <?php require APPROOT . '/views/inc/footer.php'; ?>
 
 <script>
