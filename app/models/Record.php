@@ -42,6 +42,11 @@ class Record {
 		$row = $this->db->updateQuery("lifeline_records",$data,"id=:id");
 		return $row;
 	}
+
+	public function updateOrderbycustomerid($data){
+		$row = $this->db->updateQuery("lifeline_records",$data,"customer_id=:customer_id");
+		return $row;
+	}
 	
 	public function countRegisters($search,$firstload){
 

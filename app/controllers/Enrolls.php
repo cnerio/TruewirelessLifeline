@@ -126,9 +126,7 @@ class Enrolls extends Controller
     return $customerId;
   }
 
-
-
-  public function check()
+public function old_check()
   {
     //$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -182,6 +180,65 @@ class Enrolls extends Controller
           }
           
       $data['status'] = "success";
+      $data['powered'] = $powered;
+      echo json_encode($data);
+    }
+  }
+
+  public function check()
+  {
+    //$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
+    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      $full_url = $_POST['url'];
+      //echo parse_url($full_url, PHP_URL_QUERY);
+      parse_str(parse_url($full_url, PHP_URL_QUERY)?? '', $params);
+      $utms = json_encode($params);
+      $data = [
+        "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
+        "second_name" => trim(ucfirst(strtolower($_POST['lastname']))),
+        "email" => trim($_POST['email']),
+        "state" => strtoupper(trim($_POST['state'] ?? '')),
+        "zipcode" => $_POST['zipcode'],
+        "URL" => $full_url,
+        "utms"=>$utms,
+        "phone_number" => null,
+        "order_step" => "Check Coverage",
+        "company" => "True Wireless"     
+      ];
+      //$check = $this->telgooProcessStep($data,'GTW',1);
+      $check = $this->enrollModel->getStates('GTW');
+      $zips = $this->enrollModel->getZipcodes('GTW');
+      //print_r($check);
+      if(in_array($data['state'],$check)){
+        $data['enrollment_id'] =null;
+        $powered="GTW";
+        if($data['state']=="TX"){
+          if(in_array($data['zipcode'],$zips)){
+
+            $powered="GTW";
+            $zipStatus = "success";
+          }else{
+            $zipStatus = "fail";
+            $powered="NONE";
+          }
+        }else{
+          $zipStatus = "success";
+        }
+      }else{
+        $zipStatus = "fail";
+        $powered="NONE";
+      }
+      $data['ETC'] = $powered;
+      $lastId = $this->enrollModel->saveData($data, 'lifeline_records');
+          file_put_contents("stepLog.txt", "Checking Prcoess\n", FILE_APPEND);
+          if ($lastId > 0) {
+            //$data['lastId']=$lastId;
+            $customerId = $this->genCustomerId($data, $lastId);
+            $data['customer_id'] = $customerId;
+            $this->enrollModel->updateCusId($lastId, $customerId, 'lifeline_records');
+          }
+          
+      $data['status'] = $zipStatus;
       $data['powered'] = $powered;
       echo json_encode($data);
     }
@@ -575,6 +632,11 @@ class Enrolls extends Controller
       //}
       $this->sendDocumentsEmail($data);
       $data["message"]="Files Upload Susccesfully";
+      $updatedata = [
+        "customer_id"=>$data['customer_id'],
+        "status_text"=>"Waiting for Review"
+      ];
+      $this->enrollModel->updateData($updatedata, 'lifeline_records');
       echo json_encode($data);
     }
   }
@@ -1394,6 +1456,11 @@ class Enrolls extends Controller
     $this->view('enrolls/thankyou');
   }
 
+    public function noservicearea()
+  {
+    $this->view('enrolls/noservice');
+  }
+
   
 
   public function getprograms($etc=null,$zipcode=null,$tribal=null)
@@ -1472,11 +1539,11 @@ class Enrolls extends Controller
     $mail->Port       = 587;                                 // TCP port to connect to
     //Recipients
     $mail->setFrom('lifeline@galaxydistribution.com', 'Galaxy Lileline Orders');
-    //$mail->addAddress('orders@galaxylifeline.com');
-    $mail->addAddress('currutia@gotruewireless.com');
+    $mail->addAddress('info@truewireless.com');
+    //$mail->addAddress('currutia@gotruewireless.com');
     //$mail->addCC('jparker@galaxydistribution.com'); 
     //$mail->addCC('currutia44@gmail.com');      // Add a recipient
-    $mail->addBCC('xneriox@gmail.com');
+    //$mail->addBCC('xneriox@gmail.com');
     $mail->isHTML(true); 
     switch($custmerData['ETC']){
       case "GTW":

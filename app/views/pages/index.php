@@ -299,6 +299,8 @@ $("#submitform").on("click",function(event){
                 //exit();
                 if(resObj.status=="success"){
                     form.submit();
+                }else{
+                    window.location.href = "<?php echo URLROOT; ?>/enrolls/noservicearea";
                 }
             },
             error: function(xhr, status, error) {

@@ -1,21 +1,9 @@
 start first step
 Captacha succees
 Update LEad
-Update New DataID File SAved
-POB Faile Saved
-Step 3 Saved
-Agreement Data Saved
-ETC:GTW
-Telgoo Step 4 
-nullTelgoo Step 6
-Telgoo Upload Docs
-{"msg":"Success","data":"Info Saved Successfully"}
-"Info Saved Successfully"
-{"acp_status":"\"Info Saved Successfully\"","customer_id":"TWRG0R0046"}
+Update New DataChecking Prcoess
 Checking Prcoess
 Checking Prcoess
 Checking Prcoess
-C:/wamp64/www/public/uploads/TWCW0E0049/ID_TWCW0E0049.jpg
-C:/wamp64/www/public/uploads/TWCW0E0049/POB_TWCW0E0049.jpg
-C:/wamp64/www/TruewirelessLifeline/public/uploads/TWCW0E0049/ID_TWCW0E0049.jpg
-C:/wamp64/www/TruewirelessLifeline/public/uploads/TWCW0E0049/POB_TWCW0E0049.pdf
+Checking Prcoess
+Checking Prcoess

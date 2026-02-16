@@ -2,10 +2,8 @@
 <?php require APPROOT . '/views/inc/navbarAdmin.php'; ?>
 
 <section class="py-5 mt-5">
-
-
-				<div class="container py-5">
-					<div class="row">
+	<div class="container py-5">
+		<div class="row">
 						<div class="col-md-12">
 							<nav aria-label="breadcrumb">
 								<ol class="breadcrumb">
@@ -16,8 +14,8 @@
 							<h3 style="text-align:right">Customer ID: <?php echo $data['customer_id']; ?></h3>
 							<hr>
 						</div>
-					</div>
-					<div class="row mb-3">
+		</div>
+		<div class="row mb-3">
 						<div class="col-md-3">
 							<div class="card">
 								<div class="card-body" id="demographics-card">
@@ -63,7 +61,7 @@
 								<div class="card-body">
 									<h4 class="card-title pb-2">Merchant Information</h4>
 									<p><b>Merchant's name: </b></p>
-									<p><b>TID: </b><?php echo $data['surgepays_id']; ?></p>
+									<p><b>TID: </b><?php //echo $data['surgepays_id']; ?></p>
 								</div>
 							</div> -->
 						</div>
@@ -73,26 +71,20 @@
 									<div class="card set-height">
 										<div class="card-body">
 											<h4 class="card-title pb-2">Documents </h4>
-											<!-- <div>
 											
 												
-											</div> -->
+											
                                             <?php
                                                 if(!empty($data['documents'])){
-                                                    foreach($data['documents'] as $llfile){
-                                                    //$folder = ($llfile['type_doc']=="ScreenshotImage")?"SignScreenshots":"Documents";
+                                                   foreach($data['documents'] as $llfile){
+                                                    $folder = ($llfile['type_doc']=="ScreenshotImage")?"SignScreenshots":"Documents";
 
                                                     echo '<p><b>'.$llfile['type_doc'].':</b> <a href="' . $llfile['filepath'] . '" target="_blank" style="font-size:12px;">View File</a></p>';
                                                 }
-                                                }else{
-													echo '<input id="notify-documents" type="button" class="btn btn-secondary" value="Notify to upload Documents"/>';
-												//echo '<div id="notify-documents-response"/><div>';
-												}
+                                                }
                                             ?>
-											
-										</div>
-										<div >
-										<div id="notify-documents-response"></div>
+											<input id="notify-documents" type="button" class="btn btn-secondary" value="Notify to upload Documents"/>
+											<div id="notify-documents-response"></div>
 										</div>
 									</div>
 								</div>

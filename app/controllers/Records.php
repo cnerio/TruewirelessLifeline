@@ -77,12 +77,20 @@
 				$mail->addAddress($data['email']);
 				//$mail->addCC('jparker@galaxydistribution.com'); 
 				//$mail->addCC('currutia44@gmail.com');      // Add a recipient
-				//$mail->addBCC('xneriox@gmail.com');
+				$mail->addBCC('Jennifer@gotruewireless.com');
+				$mail->addBCC('karla@gotruewireless.com');
+				$mail->addBCC('acastillo@gotruewireless.com');
+				$mail->addBCC('currutia@gotruewireless.com');
 				$mail->isHTML(true);
 				$mail->Subject = $subject;
 				$mail->Body = nl2br($message);
 				$mail->send();
 				$result="OK";
+				$docsData=array(
+					"customer_id"=>$applicationId,
+					"status_text"=>"Waiting for Docs"
+				);
+				$this->recordsModel->updateOrderbycustomerid($docsData);
 			}else{
 				$result = "Fail";
 			}
