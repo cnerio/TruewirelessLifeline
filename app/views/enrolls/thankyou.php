@@ -1,6 +1,7 @@
 <?php require APPROOT . '/views/inc/header.php'; ?>
 <?php 
 $apply=false;
+$powered = "";
 require APPROOT . '/views/inc/navbar.php'; 
 ?>
 

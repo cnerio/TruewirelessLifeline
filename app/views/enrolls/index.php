@@ -58,8 +58,9 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="ssn">Last 4 digits of your Social Security Number <span class="requiredmark">*</span></label>
-                                        <input type="text" id="ssn" name="ssn" class="form-control" maxlength="4" pattern="[0-9]*" placeholder="0000">
+                                        <label for="ssn">Social Security Number <span class="requiredmark">*</span></label>
+                                        <!-- <input type="text" id="ssn" name="ssn" class="form-control" maxlength="11" pattern="[0-9]*" placeholder="0000"> -->
+                                        <input type="text" id="ssn" name="ssn" class="form-control" placeholder="000-00-0000">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -585,14 +586,22 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
     $(document).ready(function() {
         $(".phoneUs").mask('(000) 000-0000');
         $(".zipcode").mask('00000');
+        $("#ssn").mask('000-00-0000');
         const today = new Date();
         const eighteenYearsAgo = new Date(today);
         eighteenYearsAgo.setFullYear(today.getFullYear() - 18);   
-        document.getElementById("dob").setAttribute("max", eighteenYearsAgo.toISOString().split("T"));   
+        document.getElementById("dob").setAttribute("max", eighteenYearsAgo.toISOString().split("T")); 
+        
+        
         
     });
     var form = $("#enrollForm");
-    form.validate({
+    
+    $.validator.addMethod("social", function(value, element) {
+        return this.optional(element) || /^(?!000|666|9\d{2})\d{3}-(?!00)\d{2}-(?!0000)\d{4}$/.test(value);
+    }, "Please enter a valid SSN (XXX-XX-XXXX)");
+
+    $("#enrollForm").validate({
         errorPlacement: function errorPlacement(error, element) {
             element.after(error);
         },
@@ -604,7 +613,8 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                 required:true
             },
             ssn:{
-                required:true
+                required:true,
+                social:true
             },
             dobD: {
                 required: true,
@@ -694,6 +704,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
             }
         }
     });
+
     form.steps({
         headerTag: "h3",
         bodyTag: "section",
