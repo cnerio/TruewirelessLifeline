@@ -116,6 +116,9 @@
 															<option value="DNM" <?php if ($data['order_status'] == 'DNM') {
 																					echo 'selected="selected"';
 																				} ?>>DNM</option>
+															<option value="Rejected TG5" <?php if ($data['order_status'] == 'Rejected TG5') {
+																						echo 'selected="selected"';
+																					} ?>>Rejected TG5</option>
 															<option value="Test" <?php if ($data['order_status'] == 'Test') {
 																						echo 'selected="selected"';
 																					} ?>>Test</option>
