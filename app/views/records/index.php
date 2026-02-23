@@ -117,7 +117,7 @@
 																	<option value="Complete">Complete</option>
 																	<option value="Duplicate">Duplicate</option>
 																	<option value="Rejected TG5">Rejected TG5</option>
-																	<option value="DNM">DNM</option>
+																	<option value="Do Not Serviceable">Do Not Serviceable</option>
 																	<option value="Test">Test</option>
 																</select>
 															</td>

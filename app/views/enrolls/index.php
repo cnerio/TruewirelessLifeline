@@ -1,5 +1,6 @@
 
 <?php 
+//print_r($data);
 $queryString = $_SERVER['QUERY_STRING']; 
 require APPROOT . '/views/inc/header.php'; 
 ?>
@@ -704,11 +705,30 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
             }
         }
     });
+    var stepParam = "<?php echo $data['step']; ?>"
+    var stepFromUrl = stepParam || 0;
 
     form.steps({
         headerTag: "h3",
         bodyTag: "section",
         transitionEffect: "slideLeft",
+        startIndex: parseInt(stepFromUrl),
+        onInit: function (event,currentIndex){
+            if(currentIndex===1){
+                let powered = $("#powered").val();
+                                    let zipcode = $("#zipcode").val();
+                                    let tribal = $("#tribal").val();
+                                    getlifelineprograms(powered,zipcode,tribal);
+                }else if (currentIndex===2){
+                    //console.log(currentIndex)
+                    let firstname = $("#firstname").val();
+                                    let lastname = $("#lastname").val();
+                                    let initials = firstname.charAt(0).toUpperCase() + lastname.charAt(0).toUpperCase();
+                                    let state = $("#state").val();
+                                    getAgreementsItems(state,initials);
+                                    getDatetime();
+                }
+        },
         onStepChanging: function(event, currentIndex, newIndex) {
             //form.validate().settings.ignore = ":disabled,:hidden";
             form.validate().settings.ignore=":hidden";
@@ -726,7 +746,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                 
                 if (currentIndex === 0) {
                     
-                    //console.log(benefitProgram)
+                    console.log(currentIndex)
                     if (response.length === 0) {
 						$( '.msg-error').text( "The captcha is required, please verify." );
 				

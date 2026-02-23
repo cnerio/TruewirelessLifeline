@@ -88,7 +88,7 @@
 				$result="OK";
 				$docsData=array(
 					"customer_id"=>$applicationId,
-					"status_text"=>"Waiting for Docs"
+					"order_status"=>"Waiting for Docs"
 				);
 				$this->recordsModel->updateOrderbycustomerid($docsData);
 			}else{

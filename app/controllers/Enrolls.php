@@ -29,7 +29,7 @@ class Enrolls extends Controller
           $this->view('enrolls/index2', $data);
   }
 
-  public function index()
+  public function index($customer_id = null)
   {
      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           $full_url = $_POST['url'];
@@ -55,11 +55,35 @@ class Enrolls extends Controller
 
           $this->view('enrolls/index', $data);
         }else{
-          $this->view('enrolls/index');
+          if($customer_id){
+            $data=$this->enrollModel->getCustomerData($customer_id);
+            //echo $data[0]['order_step'];
+            $data[0]['step']=$this->getStep($data[0]['order_step']);
+            $this->view('enrolls/index', $data[0]);
+          }else{
+            //$this->view('enrolls/index');
+            redirect('index');
+          }
+          
         }
   }
 
-  public function redirect(){
+  public function getStep($stepName){
+    switch($stepName){
+      case "Check Coverage":
+        $step = 0;
+        break;
+      case "Demographics":
+        $step=1;
+        break;
+      case "Eligibility & Documents":
+        $step=2;
+        break;
+    }
+    return $step;
+  }
+
+  public function redirect_(){
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $full_url = $_POST['url'];
       parse_str(parse_url($full_url, PHP_URL_QUERY), $params);
@@ -1284,6 +1308,7 @@ public function old_check()
       $fileData['statusScreen'] = ($this->enrollModel->saveData($fileData, 'lifeline_documents')) ? true : false;
       $updatestep = [
         "customer_id" => $customer_id,
+        "order_status" => "Pending",
         "order_step" => "Thankyou"
       ];
       $this->enrollModel->updateData($updatestep, 'lifeline_records');

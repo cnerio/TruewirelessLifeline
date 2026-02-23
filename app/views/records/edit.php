@@ -113,9 +113,9 @@
 															<option value="Duplicate" <?php if ($data['order_status'] == 'Duplicate') {
 																							echo 'selected="selected"';
 																						} ?>>Duplicate</option>
-															<option value="DNM" <?php if ($data['order_status'] == 'DNM') {
+															<option value="Do Not Serviceable" <?php if ($data['order_status'] == 'Do Not Serviceable') {
 																					echo 'selected="selected"';
-																				} ?>>DNM</option>
+																				} ?>>Do Not Serviceable</option>
 															<option value="Rejected TG5" <?php if ($data['order_status'] == 'Rejected TG5') {
 																						echo 'selected="selected"';
 																					} ?>>Rejected TG5</option>
