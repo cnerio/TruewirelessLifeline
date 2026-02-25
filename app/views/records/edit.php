@@ -119,6 +119,12 @@
 															<option value="Rejected TG5" <?php if ($data['order_status'] == 'Rejected TG5') {
 																						echo 'selected="selected"';
 																					} ?>>Rejected TG5</option>
+															<option value="Address Issue" <?php if ($data['order_status'] == 'Address Issue') {
+																						echo 'selected="selected"';
+																					} ?>>Address Issue</option>
+															<option value="Docs Received" <?php if ($data['order_status'] == 'Docs Received') {
+																						echo 'selected="selected"';
+																					} ?>>Docs Received</option>
 															<option value="Test" <?php if ($data['order_status'] == 'Test') {
 																						echo 'selected="selected"';
 																					} ?>>Test</option>
@@ -744,7 +750,7 @@
 				}
 				console.log(parameter);
 				$.ajax({
-					url: urlroot + '/notifyDocuments',
+					url: urlroot + 'notifyDocuments',
 
 					type: "POST",
 
@@ -758,6 +764,7 @@
 							Note = "Documents request email sent to " + email_edit;
 							addNotes(Note);
 							getNotes(customer_id);
+							window.location.reload();
 						} else {
 							$("#notify-documents-response").html(fail_response)
 						}

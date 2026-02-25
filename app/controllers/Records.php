@@ -44,6 +44,9 @@
 	}
 
 	public function notifyDocuments(){
+// 		ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);   
 		if($_SERVER['REQUEST_METHOD']=='POST'){
 			$data=[
 				"customer_id"=>$_POST['customer_id'],
@@ -86,10 +89,10 @@
 				$mail->Body = nl2br($message);
 				$mail->send();
 				$result="OK";
-				$docsData=array(
+				$docsData=[
 					"customer_id"=>$applicationId,
 					"order_status"=>"Waiting for Docs"
-				);
+				];
 				$this->recordsModel->updateOrderbycustomerid($docsData);
 			}else{
 				$result = "Fail";

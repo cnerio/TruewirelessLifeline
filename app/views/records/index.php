@@ -118,6 +118,8 @@
 																	<option value="Duplicate">Duplicate</option>
 																	<option value="Rejected TG5">Rejected TG5</option>
 																	<option value="Do Not Serviceable">Do Not Serviceable</option>
+																	<option value="Address Issue">Address Issue</option>
+																	<option value="Docs Received">Docs Received</option>
 																	<option value="Test">Test</option>
 																</select>
 															</td>

@@ -658,7 +658,7 @@ public function old_check()
       $data["message"]="Files Upload Susccesfully";
       $updatedata = [
         "customer_id"=>$data['customer_id'],
-        "status_text"=>"Waiting for Review"
+        "order_status"=>"Docs Received"
       ];
       $this->enrollModel->updateData($updatedata, 'lifeline_records');
       echo json_encode($data);
@@ -683,7 +683,7 @@ public function old_check()
     $mail->SMTPSecure = 'TLS/StartTLS';                                  // Enable TLS encryption, `ssl` also accepted
     $mail->Port       = 587;  
     $mail->setFrom('lifeline@galaxydistribution.com', 'Lifeline');
-    $$mail->addAddress('currutia@gotruewireless.com');
+    $mail->addAddress('currutia@gotruewireless.com');
     //$mail->addCC('jparker@galaxydistribution.com'); 
     //$mail->addCC('currutia44@gmail.com');      // Add a recipient
     $mail->addBCC('xneriox@gmail.com');
