@@ -20,6 +20,7 @@ class Enrolls extends Controller
             "email" => trim(strtolower($_POST['email'])),
             "state" => strtoupper(trim($_POST['state'] ?? '')),
             "zipcode" => $_POST['zipcode'],
+            "agent" => $_POST['agent'],
             "url" => $full_url,
             "utms"=>$utms?:"",
             "powered"=>"GTW"
@@ -223,11 +224,12 @@ public function old_check()
         "email" => trim($_POST['email']),
         "state" => strtoupper(trim($_POST['state'] ?? '')),
         "zipcode" => $_POST['zipcode'],
+        "agent" => $_POST['agent'],
         "URL" => $full_url,
         "utms"=>$utms,
         "phone_number" => null,
         "order_step" => "Check Coverage",
-        "company" => "True Wireless"     
+        "company" => "True Wireless",   
       ];
       //$check = $this->telgooProcessStep($data,'GTW',1);
       $check = $this->enrollModel->getStates('GTW');

@@ -4,18 +4,12 @@
      
     }
     
-    public function index(){
+    public function index($agent=NULL){
       // if(isLoggedIn()){
       //   redirect('posts');
       // }
       $data = [
-        'title' => 'SharePosts',
-        'description' => 'Simple social network built on the Emmizy MVC framework',
-        'info' => 'You can contact me with the following details below if you like my program and willing to offer me a contract and work on your project',
-        'name' => 'Omonzebaguan Emmanuel',
-        'location' => 'Nigeria, Edo State',
-        'contact' => '+2348147534847',
-        'mail' => 'emmizy2015@gmail.com'
+        'agent' => strtolower(trim($agent))
       ];
      
       $this->view('pages/index', $data);

@@ -188,10 +188,10 @@ require APPROOT . '/views/inc/navbar.php';
                         </div>
                     </div>
 
-
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="url" name="url" value="<?php echo $full_url;?>">
+                    <input type="hidden" id="agent" name="agent" value="<?php echo $data['agent']; ?>">
                     <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
                     <button id="submitform" type="Submit" class="btn btn-primary" value="">Check</button>
                     <input type="hidden" id="powered" name="powered" value="">
