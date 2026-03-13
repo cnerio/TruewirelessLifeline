@@ -1310,7 +1310,7 @@ public function old_check()
       $fileData['statusScreen'] = ($this->enrollModel->saveData($fileData, 'lifeline_documents')) ? true : false;
       $updatestep = [
         "customer_id" => $customer_id,
-        "order_status" => "Pending",
+        "order_status" => "New",
         "order_step" => "Thankyou"
       ];
       $this->enrollModel->updateData($updatestep, 'lifeline_records');

@@ -104,9 +104,9 @@
 													<div class="col-md-12">
 														<select class="form-select auto-size mb-3" id="order_status" name="order_status">
 															<option value="">Please select</option>
-															<option value="Pending" <?php if ($data['order_status'] == 'Pending') {
+															<option value="New" <?php if ($data['order_status'] == 'New') {
 																						echo 'selected="selected"';
-																					} ?>>Pending</option>
+																					} ?>>New</option>
 															<option value="Complete" <?php if ($data['order_status'] == 'Complete') {
 																							echo 'selected="selected"';
 																						} ?>>Complete</option>

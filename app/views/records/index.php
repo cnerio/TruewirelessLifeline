@@ -113,7 +113,7 @@
 															<td>
 																<select id="order_status" class="form-select grid-filter">
 																	<option value="">Please select</option>
-																	<option value="Pending" >Pending</option>
+																	<option value="New" >New</option>
 																	<option value="Complete">Complete</option>
 																	<option value="Duplicate">Duplicate</option>
 																	<option value="Rejected TG5">Rejected TG5</option>
