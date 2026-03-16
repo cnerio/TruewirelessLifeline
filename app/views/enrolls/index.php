@@ -930,21 +930,27 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                             console.log(response);
                             var myObject = JSON.parse(response)
                             if(myObject.statusScreen){
-
-                                    window.location.href = "<?php echo URLROOT;?>/enrolls/thankyou";
-                            }else{
-                               // canProceed=false;
+                                // submit hidden form to thankyou with customer_id from myObject
+                                var redirectForm = $("<form>", {
+                                    action: "<?php echo URLROOT;?>/enrolls/thankyou",
+                                    method: "POST"
+                                });
+                                redirectForm.append($("<input>", {
+                                    type: "hidden",
+                                    name: "customer_id",
+                                    value: myObject.customer_id || $("#customer_id").val()
+                                }));
+                                $("body").append(redirectForm);
+                                redirectForm.submit();
+                            } else {
+                                alert("Error saving final step. Please try again.");
                             }
-
-                        },
-                        error: function() {
-                            alert("Error saving step " + currentIndex);
                         }
                     });
-                                });
+                });
 
               
-                }
+        }
     });
 
     $('#showShip').on('click', function() {

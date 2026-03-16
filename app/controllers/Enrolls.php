@@ -50,8 +50,8 @@ class Enrolls extends Controller
             "powered"=>$_POST['powered'],
             "enrollment_id"=>$_POST['enrollment_id'],
             "is_tribal"=>$_POST['is_tribal'],
-            "customer_id"=>(isset($_POST['customer_id']))?$_POST['customer_id']:null
-            
+            "customer_id"=>(isset($_POST['customer_id']))?$_POST['customer_id']:null,
+            "step"=>0
           ];
 
           $this->view('enrolls/index', $data);
@@ -1308,6 +1308,10 @@ public function old_check()
         "type_doc" => "Screenshot"
       ];
       $fileData['statusScreen'] = ($this->enrollModel->saveData($fileData, 'lifeline_documents')) ? true : false;
+
+      // Add verification if an ID or POB document exists in lifeline_documents
+      //$fileData['hasIdOrPobDocument'] = $this->enrollModel->hasIdOrPobDocument($customer_id);
+
       $updatestep = [
         "customer_id" => $customer_id,
         "order_status" => "New",
@@ -1480,7 +1484,19 @@ public function old_check()
 
   public function thankyou()
   {
-    $this->view('enrolls/thankyou');
+    $customerId = $_POST['customer_id'] ?? null;
+    $hasIdOrPobDocument = false;
+
+    if ($customerId) {
+      $hasIdOrPobDocument = $this->enrollModel->hasIdOrPobDocument($customerId);
+    }
+
+    $data = [
+      'customer_id' => $customerId,
+      'hasIdOrPobDocument' => $hasIdOrPobDocument
+    ];
+
+    $this->view('enrolls/thankyou', $data);
   }
 
     public function noservicearea()

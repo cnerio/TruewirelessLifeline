@@ -115,6 +115,24 @@ class Enroll {
         return $result;
     }
 
+    /**
+     * Check if the customer has a saved ID or POB document in lifeline_documents.
+     *
+     * @param int|string $customerId
+     * @return bool
+     */
+    public function hasIdOrPobDocument($customerId){
+        $this->db->query("SELECT COUNT(*) AS total FROM lifeline_documents WHERE customer_id=:custId AND type_doc IN ('ID','POB')");
+        $this->db->bind(":custId", $customerId);
+        $row = $this->db->single();
+
+        if (!$row) {
+            return false;
+        }
+
+        return (int)$row->total > 0;
+    }
+
     public function getStates($company){
         switch($company){
             case "AMBT":
