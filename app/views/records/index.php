@@ -120,6 +120,10 @@
 																	<option value="Do Not Serviceable">Do Not Serviceable</option>
 																	<option value="Address Issue">Address Issue</option>
 																	<option value="Docs Received">Docs Received</option>
+																	<option value="Waiting for Docs">Waiting for Docs</option>
+																	<option value="SOLIX PENDING">SOLIX PENDING</option>
+																	<option value="TPIV">TPIV</option>
+																	<option value="DEAD">DEAD</option>
 																	<option value="Test">Test</option>
 																</select>
 															</td>

@@ -125,6 +125,19 @@
 															<option value="Docs Received" <?php if ($data['order_status'] == 'Docs Received') {
 																						echo 'selected="selected"';
 																					} ?>>Docs Received</option>
+															<option value="Waiting for Docs" <?php if ($data['order_status'] == 'Waiting for Docs') {
+																						echo 'selected="selected"';
+																					} ?>>Waiting for Docs</option>
+															<option value="SOLIX PENDING" <?php if ($data['order_status'] == 'SOLIX PENDING') {
+																						echo 'selected="selected"';
+																					} ?>>SOLIX PENDING</option>
+															<option value="TPIV" <?php if ($data['order_status'] == 'TPIV') {
+																						echo 'selected="selected"';
+																					} ?>>TPIV</option>
+															<option value="DEAD" <?php if ($data['order_status'] == 'DEAD') {
+																						echo 'selected="selected"';
+																					} ?>>DEAD</option>
+
 															<option value="Test" <?php if ($data['order_status'] == 'Test') {
 																						echo 'selected="selected"';
 																					} ?>>Test</option>

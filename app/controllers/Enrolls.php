@@ -468,14 +468,25 @@ public function old_check()
     try {
       if ($_SERVER['REQUEST_METHOD'] == "POST") {
         //print_r($_POST);
+        // Determine order_step based on POST values
+        $terms = isset($_POST['terms']) ? $_POST['terms'] : '';
+        $sms = isset($_POST['sms']) ? $_POST['sms'] : '';
+        $know = isset($_POST['know']) ? $_POST['know'] : '';
+        if ($terms === "Yes" && $sms === "Yes" && $know === "Yes") {
+            $order_step = "Agreements & Consent";
+        } else {
+            $order_step = "Agree & Sign";
+        }
+
         $data = [
           "signature_text" => trim($_POST['signaturename']),
           "datetimeConsent" => $_POST['datetimeconsent'],
-          "agree_terms" => $_POST['terms'],
-          "agree_sms" => $_POST['sms'],
-          "agree_pii" => $_POST['know'],
+          "agree_terms" => $terms,
+          "agree_sms" => $sms,
+          "agree_pii" => $know,
           "customer_id" => $_POST['customer_id'],
-          "order_step" => "Agreements & Consent"
+          "order_status" => "New",
+          "order_step" => $order_step
         ];
 
         $this->enrollModel->updateData($data, 'lifeline_records');
@@ -504,8 +515,8 @@ public function old_check()
           file_put_contents("stepLog.txt", "Telgoo Step 4 \n".json_encode($nlad), FILE_APPEND);
           $isTribal=$row2[0]['tribal']=="Y"?1:0;
           //$plan=$this->enrollModel->getTGPackages($row2[0]['state'],$etc,$isTribal);
-          $planId=$this->getTgPackages($row2[0]['zipcode'],$etc,$row2[0]['tribal'],$data['customer_id']);
-          $row2[0]['plan_id']=$planId;
+          //$planId=$this->getTgPackages($row2[0]['zipcode'],$etc,$row2[0]['tribal'],$data['customer_id']);
+          //$row2[0]['plan_id']=$planId;
           //$customer = $this->telgooProcessStep($row2[0], $etc,6);
           $customer['msg']="Success";
           $customer['data']="Info Saved Successfully";
