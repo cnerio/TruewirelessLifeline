@@ -699,7 +699,7 @@ public function old_check()
     $mail->addAddress('currutia@gotruewireless.com');
     //$mail->addCC('jparker@galaxydistribution.com'); 
     //$mail->addCC('currutia44@gmail.com');      // Add a recipient
-    $mail->addBCC('xneriox@gmail.com');
+    //$mail->addBCC('xneriox@gmail.com');
     $mail->isHTML(true);
     $mail->Subject = $subject;
     $mail->Body = nl2br($message);

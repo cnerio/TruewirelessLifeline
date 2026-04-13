@@ -20,7 +20,7 @@ class Record {
 
 	public function getReport()
 	{
-		$this->db->query('SELECT arc.customer_id as "CUSTOMER_ID",arc.first_name as "FIRST NAME",arc.second_name as "LAST NAME",arc.phone_number as "PHONE NUMBER", arc.email as "EMAIL",arc.dob as "DOB",arc.address1 as "ADDRESS1",arc.address2 as "ADDRESS2",arc.city as "CITY",arc.state as "STATE",arc.zipcode as "ZIPODE", arc.program_before as "PROGRAM BEFORE", ebp.name as "PROGRAM BENEFIT",arc.order_id as "ORDER ID",arc.account as "ACCOUNT",arc.acp_status as "STATUS",arc.company as "COMPANY ENROLLED",arc.created_at as "CREATED AT" FROM lifeline_records arc LEFT JOIN lifeline_programs ebp ON ebp.id_program=arc.program_benefit WHERE order_id is not null ORDER BY id desc;');
+		$this->db->query('SELECT arc.customer_id as "CUSTOMER_ID",arc.first_name as "FIRST NAME",arc.second_name as "LAST NAME",arc.phone_number as "PHONE NUMBER", arc.email as "EMAIL",arc.dob as "DOB",arc.address1 as "ADDRESS1",arc.address2 as "ADDRESS2",arc.city as "CITY",arc.state as "STATE",arc.zipcode as "ZIPODE", arc.program_before as "PROGRAM BEFORE", ebp.name as "PROGRAM BENEFIT",arc.order_id as "ORDER ID",arc.account as "ACCOUNT",arc.acp_status as "STATUS",arc.duplicated as "DUPLICATED",arc.company as "COMPANY ENROLLED",arc.created_at as "CREATED AT" FROM lifeline_records arc LEFT JOIN lifeline_programs ebp ON ebp.id_program=arc.program_benefit WHERE order_id is not null ORDER BY id desc;');
 		$getData = $this->db->resultSet();
 		return $getData;
 	}
@@ -118,7 +118,7 @@ class Record {
     }
 	
 	public function datatoExport(){
-		$this->db->query('SELECT arc.customer_id as "CUSTOMER ID",arc.first_name as "FIRST NAME",arc.second_name as "LAST NAME",arc.phone_number as "PHONE NUMBER", arc.email as "EMAIL",arc.dob as "DOB",arc.address1 as "ADDRESS1",arc.address2 as "ADDRESS2",arc.city as "CITY",arc.state as "STATE",arc.zipcode as "ZIPODE", arc.program_before as "PROGRAM BEFORE", ebp.description as "PROGRAM BENEFIT",arc.order_id as "ORDER ID",arc.account as "ACCOUNT",arc.acp_status as "ACP STATUS",arc.company as "COMPANY ENROLLED",UPPER(arc.source) as "SOURCE",arc.created_at as "CREATED AT" FROM lifeline_records arc JOIN c1_surgephone.ebb_programs ebp ON ebp.type_id=arc.program_benefit;');
+		$this->db->query('SELECT arc.customer_id as "CUSTOMER ID",arc.first_name as "FIRST NAME",arc.second_name as "LAST NAME",arc.phone_number as "PHONE NUMBER", arc.email as "EMAIL",arc.dob as "DOB",arc.address1 as "ADDRESS1",arc.address2 as "ADDRESS2",arc.city as "CITY",arc.state as "STATE",arc.zipcode as "ZIPODE", arc.program_before as "PROGRAM BEFORE", ebp.description as "PROGRAM BENEFIT",arc.order_id as "ORDER ID",arc.account as "ACCOUNT",arc.acp_status as "ACP STATUS",arc.duplicated as "DUPLICATED",arc.company as "COMPANY ENROLLED",UPPER(arc.source) as "SOURCE",arc.created_at as "CREATED AT" FROM lifeline_records arc JOIN c1_surgephone.ebb_programs ebp ON ebp.type_id=arc.program_benefit;');
 		$row = $this->db->resultSet();
 		return $row;
 	}
