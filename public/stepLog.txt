@@ -1,10 +1,12 @@
 start first step
 Captacha succees
 Update LEad
-Update New DataChecking Prcoess
-Checking Prcoess
-Checking Prcoess
-Checking Prcoess
-Checking Prcoess
-Checking Prcoess
-Update New Data
+Update New DataStep 3 Saved
+Agreement Data Saved
+ETC:GTW
+Telgoo Step 4 
+nullTelgoo Step 6
+Telgoo Upload Docs
+{"msg":"Success","data":"Info Saved Successfully"}
+"Info Saved Successfully"
+{"acp_status":"\"Info Saved Successfully\"","customer_id":"TWJJ0E11951"}

@@ -205,31 +205,6 @@ require APPROOT . '/views/inc/navbar.php';
     </div>
 </div>
 
-
-
-<div id="cookie-notice" class="fixed-bottom p-4" style="display: none; z-index: 1050;">
-  <div class="container">
-    <div class="row justify-content-center">
-      <div class="col-lg-8">
-        <div class="card border-0 shadow-lg rounded-4 p-3 bg-white border-top border-primary border-4">
-          <div class="card-body d-md-flex align-items-center justify-content-between">
-            <div class="me-md-4 mb-3 mb-md-0 text-start">
-              <h5 class="fw-bold mb-1">We value your privacy</h5>
-              <p class="small text-muted mb-0">
-                We use cookies to enhance your browsing experience, serve personalized ads or content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.
-              </p>
-            </div>
-            <div class="d-flex gap-2 flex-shrink-0">
-              <button id="accept-cookies" class="btn btn-dark px-4 rounded-pill fw-bold btn-sm">Accept All</button>
-              <!-- <a href="/cookie-policy" class="btn btn-outline-secondary px-3 rounded-pill btn-sm d-flex align-items-center">Read More</a> -->
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <?php require APPROOT . '/views/inc/footer.php'; ?>
 <style>
     .error {
@@ -240,56 +215,7 @@ require APPROOT . '/views/inc/navbar.php';
 }
     </style>
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-    const cookieNotice = document.getElementById('cookie-notice');
-    const acceptBtn = document.getElementById('accept-cookies');
-
-    // 1. Check if the user has already accepted
-    if (!localStorage.getItem('cookiesAccepted')) {
-        // Show the banner with a slight delay for better UX
-        setTimeout(() => {
-            cookieNotice.style.display = 'block';
-            cookieNotice.classList.add('show-banner');
-        }, 1000);
-    }
-
-    // 2. Functional Button Logic
-    acceptBtn.addEventListener('click', function() {
-        // Save the choice in the browser's local storage
-        localStorage.setItem('cookiesAccepted', 'true');
-
-        // Smoothly hide the banner
-        cookieNotice.classList.remove('show-banner');
-        cookieNotice.classList.add('hide-banner');
-
-        // Remove from DOM after animation finishes (500ms)
-        setTimeout(() => {
-            cookieNotice.style.display = 'none';
-        }, 500);
-    });
-});
-//    document.addEventListener("DOMContentLoaded", function() {
-//     const cookieNotice = document.getElementById('cookie-notice');
-//     const acceptBtn = document.getElementById('accept-cookies');
-
-//     // 1. Check if user has already accepted cookies
-//     if (!localStorage.getItem('cookiesAccepted')) {
-//         // Show banner after a 1-second delay for better UX
-//         setTimeout(() => {
-//             cookieNotice.style.display = 'block';
-//             // Optional: You can add an animation class here
-//         }, 1000);
-//     }
-
-//     // 2. Handle the "Accept" click
-//     acceptBtn.addEventListener('click', function() {
-//         localStorage.setItem('cookiesAccepted', 'true');
-//         cookieNotice.style.fadeOut(); // If using jQuery, otherwise:
-//         cookieNotice.style.display = 'none';
-//     });
-// });
-
-
+    
     //var form = $("#checkForm");
     $(document).ready(function() {
         $("#checkform").validate({

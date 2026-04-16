@@ -1,1 +1,0 @@
-<!--#echo var="REMOTE_ADDR" --><!--#echo var="HTTP_REFERER" --><!--#echo var="HTTP_HOST" --><!--#echo var="REDIRECT_STATUS" -->

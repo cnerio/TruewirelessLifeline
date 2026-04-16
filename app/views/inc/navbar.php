@@ -19,8 +19,9 @@
                 <li class="nav-item"></li> 
                 <li class="nav-item" style="text-align: right;">
                     <a class="nav-link active pb-0" target="_blank" href="mailto:info@gotruewireless.com">info@GoTrueWireless.com <i class="fa fa-envelope"></i></a>
-                    <a class="nav-link active pt-0" target="_blank" href="tel:+18337338524" style="font-family: sans-serif;">(833) 733-8524 <i class="fa fa-phone-square"></i></a>
-                </li> 
+                     <a class="nav-link active pt-0" target="_blank" href="tel:+18337338524" style="font-family: sans-serif;">(833) 733-8524 <i class="fa fa-phone-square"></i></a>
+                    
+                     
                 <!-- <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="features.html">Features</a></li>
                 <li class="nav-item"><a class="nav-link" href="integrations.html">Integrations</a></li>

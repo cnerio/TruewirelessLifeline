@@ -18,7 +18,7 @@
 
     public function __construct(){
       // Set DSN
-      $dsn = 'mysql:host=' . $this->host . ';port=3306;dbname=' . $this->dbname;
+      $dsn = 'mysql:host=' . $this->host . ';port=3308;dbname=' . $this->dbname;
       $options = array(
         PDO::ATTR_PERSISTENT => true,
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
@@ -74,9 +74,9 @@
 		$this->execute();
 		return $this->stmt->fetchAll(PDO::FETCH_COLUMN);
 	}
-	public function resultSet(){
-			$this->execute();
-			return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
+		public function resultSet(){
+		$this->execute();
+		return $this->stmt->fetchAll(PDO::FETCH_ASSOC);
 	}
 	// Get result single record as objects
 	public function single(){

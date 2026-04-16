@@ -3,3 +3,10 @@ config.ini
 public/uploads
 public/stepLog.txt
 public/stepLog.txt
+public/conexionError.txt
+public/error_log
+public/files/consentPDF/cnnerror22.txt
+public/files/consentPDF/receiving.txt
+public/files/consentPDF/select.txt
+public/inc/error_log
+public/stepLog.txt

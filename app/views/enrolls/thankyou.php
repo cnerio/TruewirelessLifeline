@@ -39,7 +39,9 @@ require APPROOT . '/views/inc/navbar.php';
     </div>
   </div>
 </div>
-
+<script>
+  fbq('track', 'Lead');
+</script>
 <script>
   document.addEventListener('DOMContentLoaded', function () {
     var customerId = '<?php echo isset($data['customer_id']) ? $data['customer_id'] : ''; ?>';
