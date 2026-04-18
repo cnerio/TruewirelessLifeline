@@ -75,6 +75,6 @@
   // URL Root
   define('URLROOT', $GLOBALS["urlroot"]);
   // Site Name
-  define('SITENAME', 'True Wireless | Lifeline');
+  define('SITENAME', 'True Wireless');
   // App Version
   define('APPVERSION', '1.0.0');
