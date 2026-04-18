@@ -75,6 +75,6 @@
   // URL Root
   define('URLROOT', $GLOBALS["urlroot"]);
   // Site Name
-  define('SITENAME', 'Galaxy Free Wireless | Lifeline Assistance Program');
+  define('SITENAME', 'True Wireless | Lifeline');
   // App Version
   define('APPVERSION', '1.0.0');

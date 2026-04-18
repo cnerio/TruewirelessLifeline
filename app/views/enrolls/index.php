@@ -59,9 +59,9 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="ssn">Social Security Number <span class="requiredmark">*</span></label>
+                                        <label for="ssn">Last 4 Digits of Social Security Number <span class="requiredmark">*</span></label>
                                         <!-- <input type="text" id="ssn" name="ssn" class="form-control" maxlength="11" pattern="[0-9]*" placeholder="0000"> -->
-                                        <input type="text" id="ssn" name="ssn" class="form-control" placeholder="000-00-0000">
+                                        <input type="text" id="ssn" name="ssn" class="form-control" maxlength="4" pattern="[0-9]*" placeholder="0000">
                                     </div>
                                 </div>
                                 <div class="col-md-6">
@@ -587,7 +587,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
     $(document).ready(function() {
         $(".phoneUs").mask('(000) 000-0000');
         $(".zipcode").mask('00000');
-        $("#ssn").mask('000-00-0000');
+        $("#ssn").mask('0000');
         const today = new Date();
         const eighteenYearsAgo = new Date(today);
         eighteenYearsAgo.setFullYear(today.getFullYear() - 18);   
@@ -599,8 +599,8 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
     var form = $("#enrollForm");
     
     $.validator.addMethod("social", function(value, element) {
-        return this.optional(element) || /^(?!000|666|9\d{2})\d{3}-(?!00)\d{2}-(?!0000)\d{4}$/.test(value);
-    }, "Please enter a valid SSN (XXX-XX-XXXX)");
+        return this.optional(element) || /^\d{4}$/.test(value);
+    }, "Please enter the last 4 digits of SSN");
 
     $("#enrollForm").validate({
         errorPlacement: function errorPlacement(error, element) {
@@ -615,7 +615,9 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
             },
             ssn:{
                 required:true,
-                social:true
+                social:true,
+                minlength: 4,
+                maxlength: 4
             },
             dobD: {
                 required: true,
