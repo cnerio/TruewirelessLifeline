@@ -128,7 +128,7 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label for="city">City <span class="requiredmark">*</span></label>
-                                        <input type="text" id="city" name="city" class="form-control" >
+                                        <input type="text" id="city" name="city" class="form-control"  value="<?php if(isset($data)){echo $data['city'];} ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
