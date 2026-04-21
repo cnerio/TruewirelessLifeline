@@ -83,12 +83,15 @@ class Enrolls extends Controller
 
           if($response){
             $leadData = json_decode($response, true);
-            if(is_array($leadData)){
-                $data['email']   = isset($leadData['email'])   ? htmlspecialchars($leadData['email'],   ENT_QUOTES, 'UTF-8') : '';
-                $data['zipcode'] = isset($leadData['zipcode']) ? htmlspecialchars($leadData['zipcode'], ENT_QUOTES, 'UTF-8') : '';
-                $data['city']    = isset($leadData['city'])    ? htmlspecialchars($leadData['city'],    ENT_QUOTES, 'UTF-8') : '';
-                $data['state']   = isset($leadData['state'])   ? htmlspecialchars($leadData['state'],   ENT_QUOTES, 'UTF-8') : '';
-            
+            // Response structure: { "success": true, "data": { "email", "city", "state", "zipcode" } }
+            if(!empty($leadData['success']) && isset($leadData['data']) && is_array($leadData['data'])){
+              $d = $leadData['data'];
+              $data['lead'] = [
+                'email'   => isset($d['email'])   ? htmlspecialchars($d['email'],   ENT_QUOTES, 'UTF-8') : '',
+                'zipcode' => isset($d['zipcode']) ? htmlspecialchars($d['zipcode'], ENT_QUOTES, 'UTF-8') : '',
+                'city'    => isset($d['city'])    ? htmlspecialchars($d['city'],    ENT_QUOTES, 'UTF-8') : '',
+                'state'   => isset($d['state'])   ? htmlspecialchars($d['state'],   ENT_QUOTES, 'UTF-8') : '',
+              ];
             }
           }
         }
