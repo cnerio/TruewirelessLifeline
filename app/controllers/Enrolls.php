@@ -309,6 +309,21 @@ public function old_check()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       file_put_contents("stepLog.txt", "start first step\n");
+
+      // Anti-spam: honeypot check — bots fill hidden fields, humans don't
+      if (!empty($_POST['fax'])) {
+        http_response_code(400);
+        echo json_encode(['status' => 'fail', 'msg' => 'Spam detected.']);
+        return;
+      }
+
+      // Anti-spam: CSRF token validation
+      if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        http_response_code(403);
+        echo json_encode(['status' => 'fail', 'msg' => 'Invalid security token. Please refresh the page and try again.']);
+        return;
+      }
+
       $secret = "6LeVbyYsAAAAALRrpPD-3ut44yhQEbX4maS9iizb";
       $responseKey = $_POST['g-recaptcha-response'];
       $remoteip = $_SERVER['REMOTE_ADDR'];

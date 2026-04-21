@@ -31,6 +31,14 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
         <div class="row">
             <div class="col mx-auto">
                 <form id="enrollForm" action="#">
+                        <!-- Anti-spam: honeypot (hidden from real users via CSS, bots fill it) -->
+                        <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;overflow:hidden;" aria-hidden="true">
+                            <label for="fax">Fax</label>
+                            <input type="text" id="fax" name="fax" tabindex="-1" autocomplete="off" value="">
+                        </div>
+                        <!-- Anti-spam: CSRF token -->
+                        <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars(csrf_token(), ENT_QUOTES, 'UTF-8'); ?>">
+
                         <h3>Personal Info</h3>
 
                         <section>
