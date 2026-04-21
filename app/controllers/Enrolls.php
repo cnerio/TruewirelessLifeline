@@ -61,7 +61,40 @@ class Enrolls extends Controller
             //echo $data[0]['order_step'];
             $data[0]['step']=$this->getStep($data[0]['order_step']);
             $this->view('enrolls/index', $data[0]);
-          }else{
+          }else if(isset($_GET['tk']) && !empty(trim($_GET['tk']))){
+        $token = preg_replace('/[^a-zA-Z0-9_\-]/', '', trim($_GET['tk']));
+
+        if(!empty($token)){
+          $curl = curl_init();
+          curl_setopt_array($curl, [
+            CURLOPT_URL            => 'https://check.galaxydistribution.com/api/lead/' . $token,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING       => '',
+            CURLOPT_MAXREDIRS      => 10,
+            CURLOPT_TIMEOUT        => 10,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST  => 'GET',
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+          ]);
+
+          $response = curl_exec($curl);
+          curl_close($curl);
+
+          if($response){
+            $leadData = json_decode($response, true);
+            if(is_array($leadData)){
+                $data['email']   = isset($leadData['email'])   ? htmlspecialchars($leadData['email'],   ENT_QUOTES, 'UTF-8') : '';
+                $data['zipcode'] = isset($leadData['zipcode']) ? htmlspecialchars($leadData['zipcode'], ENT_QUOTES, 'UTF-8') : '';
+                $data['city']    = isset($leadData['city'])    ? htmlspecialchars($leadData['city'],    ENT_QUOTES, 'UTF-8') : '';
+                $data['state']   = isset($leadData['state'])   ? htmlspecialchars($leadData['state'],   ENT_QUOTES, 'UTF-8') : '';
+            
+            }
+          }
+        }
+      }
+      $this->view('enrolls/index', $data);
+            }else{
             //$this->view('enrolls/index');
             redirect('index');
           }
