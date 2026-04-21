@@ -101,7 +101,7 @@ require APPROOT . '/views/inc/navbar.php';
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="email">Email <span class="requiredmark">*</span></label>
-                                <input type="text" id="email" name="email" class="form-control">
+                                <input type="text" id="email" name="email" class="form-control" value="<?php echo isset($data['lead']['email']) ? $data['lead']['email'] : ''; ?>">
                             </div>
                         </div>
                         <!-- <div class="col-md-6">
@@ -121,7 +121,8 @@ require APPROOT . '/views/inc/navbar.php';
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="state">State <span class="requiredmark">*</span></label>
-                                <select name="state" id="state" class="form-select" onchange="stateChanged()">
+                                <?php $leadState = isset($data['lead']['state']) ? $data['lead']['state'] : ''; ?>
+                                <select name="state" id="state" class="form-select" onchange="stateChanged()" data-preselect="<?php echo $leadState; ?>">
                                     <option value="">Select a state</option>
                                     <option value="AL">Alabama</option>
                                     <option value="AK">Alaska</option>
@@ -183,7 +184,7 @@ require APPROOT . '/views/inc/navbar.php';
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label for="zipcode">Zipcode <span class="requiredmark">*</span></label>
-                                <input type="text" id="zipcode" name="zipcode" class="form-control zipcode" maxlength="5" pattern="^[0-9]{5}$" placeholder="00000">
+                                <input type="text" id="zipcode" name="zipcode" class="form-control zipcode" maxlength="5" pattern="^[0-9]{5}$" placeholder="00000" value="<?php echo isset($data['lead']['zipcode']) ? $data['lead']['zipcode'] : ''; ?>">
                             </div>
                         </div>
                     </div>
@@ -312,5 +313,24 @@ $("#submitform").on("click",function(event){
         }
 
     })
+
+    // Lead pre-population from tk param
+    <?php if(!empty($data['lead'])): ?>
+    var leadData = {
+        email:   "<?php echo $data['lead']['email']; ?>",
+        zipcode: "<?php echo $data['lead']['zipcode']; ?>",
+        city:    "<?php echo $data['lead']['city']; ?>",
+        state:   "<?php echo $data['lead']['state']; ?>"
+    };
+    if(leadData.email || leadData.zipcode || leadData.state){
+        // Pre-select state dropdown
+        if(leadData.state){
+            $("#state").val(leadData.state);
+        }
+        // Auto-open the modal
+        var leadModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+        leadModal.show();
+    }
+    <?php endif; ?>
     
 </script>
