@@ -10,7 +10,8 @@
       // }
       $data = [
         'agent'   => strtolower(trim($agent)),
-        'lead'    => null
+        'lead'    => null,
+        'csrf_token' => csrf_token()
       ];
 
       if(isset($_GET['tk']) && !empty(trim($_GET['tk']))){

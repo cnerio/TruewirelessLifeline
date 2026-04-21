@@ -81,6 +81,11 @@ require APPROOT . '/views/inc/navbar.php';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="checkform" action="<?php echo URLROOT; ?>/enrolls<?php //echo $queryString; ?>" method="POST" enctype="multipart/form-data">
+                <div style="position:absolute;left:-9999px;top:-9999px;opacity:0;height:0;overflow:hidden;" aria-hidden="true">
+                    <label for="fax">Fax</label>
+                    <input type="text" id="fax" name="fax" tabindex="-1" autocomplete="off" value="">
+                </div>
+                <input type="hidden" name="csrf_token" value="<?php echo htmlspecialchars($data['csrf_token'], ENT_QUOTES, 'UTF-8'); ?>">
                 <div class="modal-body">
 
                     <div class="row">
