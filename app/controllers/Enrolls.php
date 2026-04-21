@@ -92,9 +92,8 @@ class Enrolls extends Controller
             }
           }
         }
-      }
-      $this->view('enrolls/index', $data);
-            }else{
+        $this->view('enrolls/index', $data);
+      }else{
             //$this->view('enrolls/index');
             redirect('index');
           }
