@@ -249,6 +249,20 @@ public function old_check()
   {
     //$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      // Anti-spam: honeypot check — bots fill hidden fields, humans don't
+      if (!empty($_POST['fax'])) {
+        http_response_code(400);
+        echo json_encode(['status' => 'fail', 'msg' => 'Spam detected.']);
+        return;
+      }
+
+      // Anti-spam: CSRF token validation
+      if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        http_response_code(403);
+        echo json_encode(['status' => 'fail', 'msg' => 'Invalid security token. Please refresh the page and try again.']);
+        return;
+      }
+
       $full_url = $_POST['url'];
       //echo parse_url($full_url, PHP_URL_QUERY);
       parse_str(parse_url($full_url, PHP_URL_QUERY)?? '', $params);
