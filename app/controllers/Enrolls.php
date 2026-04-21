@@ -86,12 +86,12 @@ class Enrolls extends Controller
             // Response structure: { "success": true, "data": { "email", "city", "state", "zipcode" } }
             if(!empty($leadData['success']) && isset($leadData['data']) && is_array($leadData['data'])){
               $d = $leadData['data'];
-              $data['lead'] = [
-                'email'   => isset($d['email'])   ? htmlspecialchars($d['email'],   ENT_QUOTES, 'UTF-8') : '',
-                'zipcode' => isset($d['zipcode']) ? htmlspecialchars($d['zipcode'], ENT_QUOTES, 'UTF-8') : '',
-                'city'    => isset($d['city'])    ? htmlspecialchars($d['city'],    ENT_QUOTES, 'UTF-8') : '',
-                'state'   => isset($d['state'])   ? htmlspecialchars($d['state'],   ENT_QUOTES, 'UTF-8') : '',
-              ];
+              
+                $data['email']  = isset($d['email'])   ? htmlspecialchars($d['email'],   ENT_QUOTES, 'UTF-8') : '';
+                $data['zipcode'] = isset($d['zipcode']) ? htmlspecialchars($d['zipcode'], ENT_QUOTES, 'UTF-8') : '';
+                $data['city']    = isset($d['city'])    ? htmlspecialchars($d['city'],    ENT_QUOTES, 'UTF-8') : '';
+                $data['state']   = isset($d['state'])   ? htmlspecialchars($d['state'],   ENT_QUOTES, 'UTF-8') : '';
+              
             }
           }
         }
