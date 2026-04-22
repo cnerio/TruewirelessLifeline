@@ -7,6 +7,18 @@
     <meta name="facebook-domain-verification" content="rdje51vt2ik7s4ta3p4mr4o2xp38do" />
 
     <title><?php echo SITENAME; ?></title>
+    <meta name="description" content="Get FREE wireless service through the Lifeline program. Qualify with SNAP, Medicaid, SSI & more. Apply today with True Wireless!">
+    <meta name="keywords" content="lifeline wireless service, free government wireless, true wireless lifeline, free service SNAP, Medicaid wireless plan, lifeline program apply">
+    <meta name="author" content="True Wireless">
+    <meta name="publisher" content="True Wireless">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://lifeline.truewireless.com/">
+
+    <!-- Open Graph (Meta Ads) -->
+    <meta property="og:title" content="<?php echo SITENAME; ?>">
+    <meta property="og:description" content="Get FREE wireless service through the Lifeline program. Qualify with SNAP, Medicaid, SSI & more. Apply today with True Wireless!">
+    <meta property="og:url" content="https://lifeline.truewireless.com/">
+    <meta property="og:type" content="website">
 
     <script src="https://cdn.pagesense.io/js/galaxydistribution/2709d9d67a0f44c586c1077bfd643e4e.js"></script>
 
