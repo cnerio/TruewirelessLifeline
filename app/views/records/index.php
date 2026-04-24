@@ -126,6 +126,7 @@
 																	<option value="TPIV">TPIV</option>
 																	<option value="DEAD">DEAD</option>
 																	<option value="Test">Test</option>
+																	<option value="Missing Consents">Missing Consents</option>
 																</select>
 															</td>
 															<td>

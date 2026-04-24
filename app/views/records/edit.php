@@ -141,6 +141,9 @@
 															<option value="Test" <?php if ($data['order_status'] == 'Test') {
 																						echo 'selected="selected"';
 																					} ?>>Test</option>
+															<option value="Missing Consents" <?php if ($data['order_status'] == 'Missing Consents') {
+																						echo 'selected="selected"';
+																					} ?>>Missing Consents</option>
 														</select>
 														<input type="hidden" name="user_id" value="<?php echo $_SESSION['user_id'] ?>" />
 														<input type="hidden" name="username" id="username" value="<?php echo $_SESSION['email']; ?>">
