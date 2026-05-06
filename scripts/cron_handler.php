@@ -13,15 +13,15 @@ $mail = new PHPMailer(true);
 try {
     // Configuración SMTP (puedes traerla de tus constantes de config.php)
     $mail->isSMTP();
-    $mail->Host       = 'smtp-mail.outlook.com';            // Specify main and backup SMTP servers
+    $mail->Host       = SMTP_HOST;            // Specify main and backup SMTP servers
     $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-    $mail->Username   = 'lifeline@galaxydistribution.com';                     // SMTP username
-    $mail->Password   = 'Life@2025$$Galaxy';                               // SMTP password
-    $mail->SMTPSecure = 'TLS/StartTLS';                                  // Enable TLS encryption, `ssl` also accepted
-    $mail->Port       = 587;                                 // TCP port to connect to
+    $mail->Username   = SMTP_USERNAME;                     // SMTP username
+    $mail->Password   = SMTP_PASSWORD;                               // SMTP password
+    $mail->SMTPSecure = SMTP_ENCRYPTION;                                  // Enable TLS encryption, `ssl` also accepted
+    $mail->Port       = SMTP_PORT;                                 // TCP port to connect to
     //Recipients
-    $mail->setFrom('lifeline@galaxydistribution.com', 'Galaxy Lileline Orders');
-    $mail->addAddress('xneriox@gmail.com');
+    $mail->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME_ORDERS);
+    $mail->addAddress(MAIL_ORDERS_TO);
     $mail->isHTML(true);
     $message= "PHPMailer inicializado correctamente en el Cron.";
     $mail->Subject = 'New Email GTW ';

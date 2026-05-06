@@ -338,7 +338,7 @@ public function old_check()
       //   return;
       // }
 
-      $secret = "6LeVbyYsAAAAALRrpPD-3ut44yhQEbX4maS9iizb";
+      $secret = RECAPTCHA_SECRET;
       $responseKey = $_POST['g-recaptcha-response'];
       $remoteip = $_SERVER['REMOTE_ADDR'];
       
@@ -618,7 +618,7 @@ public function old_check()
         
         $row2[0]['acp_status'] = $acpStatus;
         
-        $this->sendNotification($row2[0]);
+        //$this->sendNotification($row2[0]);
 
         echo json_encode($result);
       }
@@ -731,7 +731,7 @@ public function old_check()
         $data['pobFileName']=basename($data['pobFileStatus']['filepath']);
       }
       //}
-      $this->sendDocumentsEmail($data);
+      //$this->sendDocumentsEmail($data);
       $data["message"]="Files Upload Susccesfully";
       $updatedata = [
         "customer_id"=>$data['customer_id'],
@@ -744,7 +744,7 @@ public function old_check()
 
   public function sendDocumentsEmail($data){
     //$_SERVER['DOCUMENT_ROOT'].'/public/uploads/'
-    $to = "xneriox@gmail.com";
+    $to = MAIL_DOCS_TO;
     $subject = "Document Submission for Customer ID: " . $data['customer_id'];  
     $message = "Customer ID: " . $data['customer_id'] . "\n";
     //$message .= "Customer Name: " . $data['first_name']." ".$data['second_name'] . "\n";
@@ -753,14 +753,14 @@ public function old_check()
     $mail = $mailer->load();
     $mail->SMTPDebug = 0;                                       // Enable verbose debug output
     $mail->isSMTP();                                            // Set mailer to use SMTP
-    $mail->Host       = 'smtp-mail.outlook.com';            // Specify main and backup SMTP servers
+    $mail->Host       = SMTP_HOST;            // Specify main and backup SMTP servers
     $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-    $mail->Username   = 'lifeline@galaxydistribution.com';                     // SMTP username
-    $mail->Password   = 'Life@2025$$Galaxy';                               // SMTP password
+    $mail->Username   = SMTP_USERNAME;                     // SMTP username
+    $mail->Password   = SMTP_PASSWORD;                               // SMTP password
     $mail->SMTPSecure = 'TLS/StartTLS';                                  // Enable TLS encryption, `ssl` also accepted
     $mail->Port       = 587;  
-    $mail->setFrom('lifeline@galaxydistribution.com', 'Lifeline');
-    $mail->addAddress('currutia@gotruewireless.com');
+    $mail->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME_DOCS);
+    $mail->addAddress(MAIL_DOCS_TO);
     //$mail->addCC('jparker@galaxydistribution.com'); 
     //$mail->addCC('currutia44@gmail.com');      // Add a recipient
     //$mail->addBCC('xneriox@gmail.com');
@@ -1649,15 +1649,15 @@ public function old_check()
     $mail = $mailer->load();
     $mail->SMTPDebug = 0;                                       // Enable verbose debug output
     $mail->isSMTP();                                            // Set mailer to use SMTP
-    $mail->Host       = 'smtp-mail.outlook.com';            // Specify main and backup SMTP servers
+    $mail->Host       = SMTP_HOST;            // Specify main and backup SMTP servers
     $mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-    $mail->Username   = 'lifeline@galaxydistribution.com';                     // SMTP username
-    $mail->Password   = 'Life@2025$$Galaxy';                               // SMTP password
+    $mail->Username   = SMTP_USERNAME;                     // SMTP username
+    $mail->Password   = SMTP_PASSWORD;                               // SMTP password
     $mail->SMTPSecure = 'TLS/StartTLS';                                  // Enable TLS encryption, `ssl` also accepted
     $mail->Port       = 587;                                 // TCP port to connect to
     //Recipients
-    $mail->setFrom('lifeline@galaxydistribution.com', 'Galaxy Lileline Orders');
-    $mail->addAddress('info@truewireless.com');
+    $mail->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME_ORDERS);
+    $mail->addAddress(MAIL_ORDERS_TO);
     //$mail->addAddress('currutia@gotruewireless.com');
     //$mail->addCC('jparker@galaxydistribution.com'); 
     //$mail->addCC('currutia44@gmail.com');      // Add a recipient

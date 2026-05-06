@@ -58,7 +58,7 @@
 				$customerName = $data['firstname'] . ' ' . $data['lastname'];
 				$applicationId = $data['customer_id'];
 				$uploadLink = "https://lifeline.truewireless.com/enrolls/getdocuments/" . $data['customer_id'];
-				$supportEmail = "support@truewireless.com";
+				$supportEmail = MAIL_SUPPORT_EMAIL;
 				//print_r($data);
 			 	//$to = "xneriox@gmail.com";
 				$subject = "Additional Documents Required to Complete Your Lifeline Application ";  
@@ -70,20 +70,17 @@
 				$mail = $mailer->load();
 				$mail->SMTPDebug = 0;                                       // Enable verbose debug output
 				$mail->isSMTP();                                            // Set mailer to use SMTP
-				$mail->Host       = 'smtp-mail.outlook.com';            // Specify main and backup SMTP servers
+				$mail->Host       = SMTP_HOST;            // Specify main and backup SMTP servers
 				$mail->SMTPAuth   = true;                                   // Enable SMTP authentication
-				$mail->Username   = 'lifeline@galaxydistribution.com';                     // SMTP username
-				$mail->Password   = 'Life@2025$$Galaxy';                               // SMTP password
-				$mail->SMTPSecure = 'TLS/StartTLS';                                  // Enable TLS encryption, `ssl` also accepted
-				$mail->Port       = 587;  
-				$mail->setFrom('lifeline@galaxydistribution.com', 'Lifeline');
+				$mail->Username   = SMTP_USERNAME;                     // SMTP username
+				$mail->Password   = SMTP_PASSWORD;                               // SMTP password
+				$mail->SMTPSecure = SMTP_ENCRYPTION;                                  // Enable TLS encryption, `ssl` also accepted
+				$mail->Port       = SMTP_PORT;  
+				$mail->setFrom(MAIL_FROM_ADDRESS, MAIL_FROM_NAME_DOCS);
 				$mail->addAddress($data['email']);
 				//$mail->addCC('jparker@galaxydistribution.com'); 
 				//$mail->addCC('currutia44@gmail.com');      // Add a recipient
-				$mail->addBCC('Jennifer@gotruewireless.com');
-				$mail->addBCC('karla@gotruewireless.com');
-				$mail->addBCC('acastillo@gotruewireless.com');
-				$mail->addBCC('currutia@gotruewireless.com');
+				$mail->addBCC(MAIL_NOTIFY_DOCS_BCC);
 				$mail->isHTML(true);
 				$mail->Subject = $subject;
 				$mail->Body = nl2br($message);

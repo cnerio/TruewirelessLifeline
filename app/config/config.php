@@ -64,6 +64,7 @@
     define('MAIL_NOTIFY_DOCS_BCC', $config['mail_notify_docs_bcc'] ?? '');
     define('AMBT_ADD_SUBSCRIBER_URL', $config['ambt_add_subscriber_url'] ?? '');
     define('AMBT_UPLOAD_DOCUMENT_URL', $config['ambt_upload_document_url'] ?? '');
+    define('MAIL_SUPPORT_EMAIL', $config['mail_support_email'] ?? '');
     define('IS_LOCALHOST', $isLocalhost);
   //echo $_SERVER['DOCUMENT_ROOT'];
   
