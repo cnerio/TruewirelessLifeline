@@ -1,5 +1,5 @@
 <?php
-echo $queryString = $_SERVER['QUERY_STRING']; // e.g., "utm_source=google&utm_medium=cpc"
+//echo $queryString = $_SERVER['QUERY_STRING']; // e.g., "utm_source=google&utm_medium=cpc"
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
 $full_url = $protocol . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 //$full_url = "http://localhost/galaxylifeline/enrolls?utm_source=google&utm_medium=cpc";
@@ -196,7 +196,31 @@ require APPROOT . '/views/inc/navbar.php';
 
                 </div>
                 <div class="modal-footer">
-                    <input type="hidden" id="url" name="url" value="<?php echo $full_url;?>">
+                    <?php
+                        $url_value = $full_url;
+                        if (!empty($data['lead']['page_url_params'])) {
+                            $fullUrlParts = parse_url($full_url);
+                            $currentParams = [];
+
+                            if (!empty($fullUrlParts['query'])) {
+                                parse_str($fullUrlParts['query'], $currentParams);
+                            }
+
+                            $pageUrlParams = [];
+                            parse_str(htmlspecialchars_decode($data['lead']['page_url_params'], ENT_QUOTES), $pageUrlParams);
+
+                            $mergedParams = array_merge($currentParams, $pageUrlParams);
+                            $rebuiltUrl = $fullUrlParts['scheme'] . '://' . $fullUrlParts['host'];
+
+                            if (!empty($fullUrlParts['path'])) {
+                                $rebuiltUrl .= $fullUrlParts['path'];
+                            }
+
+                            $queryString = http_build_query($mergedParams);
+                            $url_value = !empty($queryString) ? $rebuiltUrl . '?' . $queryString : $rebuiltUrl;
+                        }
+                    ?>
+                    <input type="hidden" id="url" name="url" value="<?php echo htmlspecialchars($url_value, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" id="agent" name="agent" value="<?php echo $data['agent']; ?>">
                     <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
                     <button id="submitform" type="Submit" class="btn btn-primary" value="">Check</button>
@@ -249,7 +273,7 @@ require APPROOT . '/views/inc/navbar.php';
             }
         });
 
-        $.validator.addMethod("zipcodeMatch", function (value, element, params) {
+    $.validator.addMethod("zipcodeMatch", function (value, element, params) {
     let zipcode = $("#zipcode").val();
     //let city = $("#city").val().toLowerCase();
     let state = $("#state").val();
