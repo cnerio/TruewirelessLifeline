@@ -190,9 +190,9 @@ public function old_check()
   {
     //$_POST = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-      $full_url = $_POST['url'];
+      $full_url = isset($_POST['url']) ? html_entity_decode($_POST['url'], ENT_QUOTES, 'UTF-8') : '';
       //echo parse_url($full_url, PHP_URL_QUERY);
-      parse_str(parse_url($full_url, PHP_URL_QUERY)?? '', $params);
+      parse_str(parse_url($full_url, PHP_URL_QUERY) ?? '', $params);
       $utms = json_encode($params);
       $data = [
         "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
@@ -263,9 +263,9 @@ public function old_check()
         return;
       }
 
-      $full_url = $_POST['url'];
+      $full_url = isset($_POST['url']) ? html_entity_decode($_POST['url'], ENT_QUOTES, 'UTF-8') : '';
       //echo parse_url($full_url, PHP_URL_QUERY);
-      parse_str(parse_url($full_url, PHP_URL_QUERY)?? '', $params);
+      parse_str(parse_url($full_url, PHP_URL_QUERY) ?? '', $params);
       $utms = json_encode($params);
       $data = [
         "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
@@ -376,10 +376,9 @@ public function old_check()
         }else{
           $customer_id =null;
         };
-        $full_url = $_POST['url'];
+        $full_url = isset($_POST['url']) ? html_entity_decode($_POST['url'], ENT_QUOTES, 'UTF-8') : '';
 
-        //parse_str(parse_url($full_url, PHP_URL_QUERY), $params);
-        $params =[];
+        parse_str(parse_url($full_url, PHP_URL_QUERY) ?? '', $params);
         $utms = json_encode($params);
         $data = [
           "first_name" => trim(ucfirst(strtolower($_POST['firstname']))),
@@ -403,14 +402,14 @@ public function old_check()
           "URL" => $full_url,
           "company" => $_POST['company'],
           "utms"=>$utms,
-          "utm_source" => (isset($_POST['utm_source'])) ? $_POST['utm_source'] : null,
-          "utm_medium" => (isset($_POST['utm_medium'])) ? $_POST['utm_medium'] : null,
-          "utm_campaign" => (isset($_POST['utm_campaign'])) ? $_POST['utm_campaign'] : null,
-          "utm_content" => (isset($_POST['utm_content'])) ? $_POST['utm_content'] : null,
-          "match_type" => (isset($_POST['match_type'])) ? $_POST['match_type'] : null,
-          "utm_adgroup" => (isset($_POST['utm_adgroup'])) ? $_POST['utm_adgroup'] : null,
-          "gclid" => (isset($_POST['gclid'])) ? $_POST['gclid'] : null,
-          "fbclid" => (isset($_POST['fbclid'])) ? $_POST['fbclid'] : null,
+          "utm_source" => (isset($_POST['utm_source']) && $_POST['utm_source'] !== '') ? $_POST['utm_source'] : ($params['utm_source'] ?? null),
+          "utm_medium" => (isset($_POST['utm_medium']) && $_POST['utm_medium'] !== '') ? $_POST['utm_medium'] : ($params['utm_medium'] ?? null),
+          "utm_campaign" => (isset($_POST['utm_campaign']) && $_POST['utm_campaign'] !== '') ? $_POST['utm_campaign'] : ($params['utm_campaign'] ?? null),
+          "utm_content" => (isset($_POST['utm_content']) && $_POST['utm_content'] !== '') ? $_POST['utm_content'] : ($params['utm_content'] ?? null),
+          "match_type" => (isset($_POST['match_type']) && $_POST['match_type'] !== '') ? $_POST['match_type'] : ($params['match_type'] ?? null),
+          "utm_adgroup" => (isset($_POST['utm_adgroup']) && $_POST['utm_adgroup'] !== '') ? $_POST['utm_adgroup'] : ($params['utm_adgroup'] ?? null),
+          "gclid" => (isset($_POST['gclid']) && $_POST['gclid'] !== '') ? $_POST['gclid'] : ($params['gclid'] ?? null),
+          "fbclid" => (isset($_POST['fbclid']) && $_POST['fbclid'] !== '') ? $_POST['fbclid'] : ($params['fbclid'] ?? null),
           "ETC"=>$_POST['powered'],
           "order_id"=>$_POST['enrollment_id'],
           "enrollment_id"=>$_POST['enrollment_id'],
