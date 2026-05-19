@@ -33,6 +33,11 @@ require APPROOT . '/views/inc/navbar.php';
         </div>
     </div>
 </header>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NRRFKW3X"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
 <section>
     <div class="container py-4 py-xl-5">
         <div class="row">
