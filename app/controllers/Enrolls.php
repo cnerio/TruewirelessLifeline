@@ -231,7 +231,7 @@ public function old_check()
       }
       $data['ETC'] = $powered;
       $lastId = $this->enrollModel->saveData($data, 'lifeline_records');
-          file_put_contents("stepLog.txt", "Checking Prcoess\n", FILE_APPEND);
+          step_log("Checking Prcoess");
           if ($lastId > 0) {
             //$data['lastId']=$lastId;
             $customerId = $this->genCustomerId($data, $lastId);
@@ -305,7 +305,7 @@ public function old_check()
       }
       $data['ETC'] = $powered;
       $lastId = $this->enrollModel->saveData($data, 'lifeline_records');
-          file_put_contents("stepLog.txt", "Checking Prcoess\n", FILE_APPEND);
+          step_log("Checking Prcoess");
           if ($lastId > 0) {
             //$data['lastId']=$lastId;
             $customerId = $this->genCustomerId($data, $lastId);
@@ -322,7 +322,7 @@ public function old_check()
   public function savestep1()
   {
     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-      file_put_contents("stepLog.txt", "start first step\n");
+      step_log("start first step", true);
 
       // Anti-spam: honeypot check — bots fill hidden fields, humans don't
       // if (!empty($_POST['fax'])) {
@@ -366,9 +366,9 @@ public function old_check()
       if (!$result['success']) {
         $data['status'] = "fail";
         $data['msg']= 'CAPTCHA verification failed';
-        file_put_contents("stepLog.txt", "CAPTCHA verification failed\n", FILE_APPEND);
+        step_log("CAPTCHA verification failed");
       }else{
-        file_put_contents("stepLog.txt", "Captacha succees\n", FILE_APPEND);
+        step_log("Captacha succees");
         $phonenumber = preg_replace('/[^0-9]/', '', $_POST['phone']);
         $dob = date("m/d/Y", strtotime($_POST['dobM'] . "/" . $_POST['dobD'] . "/" . $_POST['dobY']));
         if(isset($_POST['customer_id'])){
@@ -423,10 +423,10 @@ public function old_check()
             //$data['customer_id'] = $customerId;
             $data['status'] = "success";
             $data['action']="update";
-            file_put_contents("stepLog.txt", "Update LEad\n", FILE_APPEND);
+            step_log("Update LEad");
         }else{
           $lastId = $this->enrollModel->saveData($data, 'lifeline_records');
-          file_put_contents("stepLog.txt", "New Lead Saved\n", FILE_APPEND);
+          step_log("New Lead Saved");
           if ($lastId > 0) {
             //$data['lastId']=$lastId;
             $customerId = $this->genCustomerId($data, $lastId);
@@ -435,13 +435,13 @@ public function old_check()
             if($data['ETC']=="AMBT"){
               $data['action']="insert";
               $data['status'] = "success";
-              file_put_contents("stepLog.txt", "Start AMBT Process \n", FILE_APPEND);
+              step_log("Start AMBT Process");
             }else{
               //$addressValidation = $this->telgooProcessStep($data,$data['ETC'],2);
-              file_put_contents("stepLog.txt", "Telgoo Enrollment\n", FILE_APPEND);
+              step_log("Telgoo Enrollment");
               $addressValidation['msg']="Success";
               if($addressValidation['msg']=="Success"){
-                file_put_contents("stepLog.txt", "Telgoo Enrollment Success", FILE_APPEND);
+                step_log("Telgoo Enrollment Success");
                 $data['action']="insert";
                 $data['status'] = "success";
               }else{
@@ -477,12 +477,12 @@ public function old_check()
       ];
 
       $this->enrollModel->updateData($data, 'lifeline_records');
-      file_put_contents("stepLog.txt", "Update New Data", FILE_APPEND);
+      step_log("Update New Data");
       if (!empty($_POST['govId'])) {
         $base64_string = $_POST['govId'];
         $customer_id = $data['customer_id'];
         $filepath = saveBase64File($base64_string, $customer_id, "ID");
-        file_put_contents("stepLog.txt", "ID File SAved\n", FILE_APPEND);
+        step_log("ID File SAved");
         $fileData = [
           "customer_id" => $customer_id,
           "filepath" => $filepath,
@@ -497,7 +497,7 @@ public function old_check()
         $base64_string_pob= $_POST['pob'];
         $customer_id = $data['customer_id'];
         $filepath2 = saveBase64File($base64_string_pob, $customer_id, "POB");
-        file_put_contents("stepLog.txt", "POB Faile Saved\n", FILE_APPEND);
+        step_log("POB Faile Saved");
         $pobData = [
           "customer_id" => $customer_id,
           "filepath" => $filepath2,
@@ -554,7 +554,7 @@ public function old_check()
         ];
 
         $this->enrollModel->updateData($data, 'lifeline_records');
-        file_put_contents("stepLog.txt", "Step 3 Saved\n", FILE_APPEND);
+        step_log("Step 3 Saved");
         $initialData = [
           "initials1" => trim(strtoupper($_POST['initials_1'])),
           "initials2" => trim(strtoupper($_POST['initials_2'])),
@@ -569,14 +569,14 @@ public function old_check()
         ];
 
         $initialData['statusfinale'] = ($this->enrollModel->saveData($initialData, 'lifeline_agreement')) ? true : false;
-        file_put_contents("stepLog.txt", "Agreement Data Saved\n", FILE_APPEND);
+        step_log("Agreement Data Saved");
         $row2 = $this->enrollModel->getCustomerData($data['customer_id']);
         //echo json_encode($initialData);
         $etc=$row2[0]['ETC'];
-        file_put_contents("stepLog.txt", "ETC:".$etc."\n", FILE_APPEND);
+        step_log("ETC:".$etc);
         if($etc=="GTW" or $etc=="NAL"){
           //$nlad = $this->telgooProcessStep($row2[0],$etc,4);
-          file_put_contents("stepLog.txt", "Telgoo Step 4 \n".json_encode($nlad), FILE_APPEND);
+          step_log("Telgoo Step 4 ".json_encode($nlad));
           $isTribal=$row2[0]['tribal']=="Y"?1:0;
           //$plan=$this->enrollModel->getTGPackages($row2[0]['state'],$etc,$isTribal);
           //$planId=$this->getTgPackages($row2[0]['zipcode'],$etc,$row2[0]['tribal'],$data['customer_id']);
@@ -584,17 +584,17 @@ public function old_check()
           //$customer = $this->telgooProcessStep($row2[0], $etc,6);
           $customer['msg']="Success";
           $customer['data']="Info Saved Successfully";
-          file_put_contents("stepLog.txt", "Telgoo Step 6\n", FILE_APPEND);
+          step_log("Telgoo Step 6");
           //$this->uploadTGDocs($data['customer_id'],$row2[0]['order_id'],$etc);
-          file_put_contents("stepLog.txt", "Telgoo Upload Docs\n", FILE_APPEND);
-          file_put_contents("stepLog.txt", json_encode($customer)."\n", FILE_APPEND);
+          step_log("Telgoo Upload Docs");
+          step_log(json_encode($customer));
           if($customer['msg']=="Success"){
               $acpStatus = json_encode($customer['data']);
-              file_put_contents("stepLog.txt", json_encode($customer['data'])."\n", FILE_APPEND);
+              step_log(json_encode($customer['data']));
               
           }else{
             $acpStatus = json_encode($customer['errors']);
-             file_put_contents("stepLog.txt", json_encode($customer['errors'])."\n", FILE_APPEND);
+             step_log(json_encode($customer['errors']));
           }
          
           $data['acp_status']=$acpStatus;
@@ -602,7 +602,7 @@ public function old_check()
             "acp_status" => $acpStatus,
             "customer_id" => $data['customer_id']
           ];
-           file_put_contents("stepLog.txt", json_encode($saveResponse)."\n", FILE_APPEND);
+           step_log(json_encode($saveResponse));
            $this->enrollModel->updateData($saveResponse, 'lifeline_records');
         }else{
           // $customerData = $this->enrollModel->getCustomerData($data['customer_id']);
@@ -774,7 +774,7 @@ public function old_check()
 
     foreach ($files as $file) {
         $path = $_SERVER['DOCUMENT_ROOT'] . '/public/uploads/'. $data['customer_id'] . '/' . $file;
-        file_put_contents("stepLog.txt",  $path."\n", FILE_APPEND);
+        step_log($path);
         if (file_exists($path)) {
             $mail->addAttachment($path);
         }
@@ -860,10 +860,10 @@ public function old_check()
 
   public function uploadTGDocs($customer_id,$enrollmentId,$etc){
     $files = $this->enrollModel->getAllFiles($customer_id);
-    file_put_contents("stepLog.txt", json_encode($files)."\n", FILE_APPEND);
+    step_log(json_encode($files));
     //$folder = $_SERVER['DOCUMENT_ROOT'].'/TruewirelessLifeline/public/uploads/';
     $folder = $_SERVER['DOCUMENT_ROOT'].'/public/uploads/';
-    file_put_contents("stepLog.txt", $folder."\n", FILE_APPEND);
+    step_log($folder);
     //echo __DIR__."/../";
     $priority = [
       'POB' => 1, // GA_PROOF
@@ -881,11 +881,11 @@ public function old_check()
           $imageData = $this->curl_get_file_contents($file['filepath']);
           $filename = basename($file['filepath']);
           $filePath = $folder.$customer_id.'/'. $filename;
-          file_put_contents("stepLog.txt", $filePath."\n", FILE_APPEND);
+          step_log($filePath);
           $finfo = finfo_open(FILEINFO_MIME_TYPE);
           $mimeType = finfo_file($finfo, $filePath);
           finfo_close($finfo);
-          file_put_contents("stepLog.txt", $mimeType."\n", FILE_APPEND);
+          step_log($mimeType);
           //$filename = basename($fileData['filepath']);
           $base64Img = base64_encode($imageData);
           $saveFiles = [

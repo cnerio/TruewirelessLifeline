@@ -41,6 +41,8 @@
         throw new RuntimeException('Unable to parse config.ini at: ' . $configPath);
     }
 
+    define('CONFIG_INI_PATH', $configPath);
+
     //print_r($config);
   // DB Params
   define('DB_HOST', $config["dbhost"]);
@@ -71,6 +73,7 @@
   // App Root
   define('APPROOT', dirname(dirname(__FILE__)));
 
+  //echo $config['sitename'];
  
   $GLOBALS["urlroot"] = $config["urlroot"];
   // URL Root
