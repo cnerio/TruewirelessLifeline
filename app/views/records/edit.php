@@ -131,6 +131,12 @@
 															<option value="SOLIX PENDING" <?php if ($data['order_status'] == 'SOLIX PENDING') {
 																						echo 'selected="selected"';
 																					} ?>>SOLIX PENDING</option>
+															<option value="Pending Review" <?php if ($data['order_status'] == 'Pending Review') {
+																echo 'selected="selected"';
+															} ?>>Pending Review</option>
+															<option value="Returning Customer" <?php if ($data['order_status'] == 'Returning Customer') {
+																echo 'selected="selected"';
+															} ?>>Returning Customer</option>
 															<option value="TPIV" <?php if ($data['order_status'] == 'TPIV') {
 																						echo 'selected="selected"';
 																					} ?>>TPIV</option>

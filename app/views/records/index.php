@@ -123,6 +123,8 @@
 																	<option value="Docs Received">Docs Received</option>
 																	<option value="Waiting for Docs">Waiting for Docs</option>
 																	<option value="SOLIX PENDING">SOLIX PENDING</option>
+																	<option value="Pending Review">Pending Review</option>
+																	<option value="Returning Customer">Returning Customer</option>
 																	<option value="TPIV">TPIV</option>
 																	<option value="DEAD">DEAD</option>
 																	<option value="Test">Test</option>
