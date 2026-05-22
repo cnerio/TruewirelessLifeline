@@ -121,6 +121,7 @@
 																	<option value="Do Not Serviceable">Do Not Serviceable</option>
 																	<option value="Address Issue">Address Issue</option>
 																	<option value="Docs Received">Docs Received</option>
+																	<option value="Sent Message">Sent Message</option>
 																	<option value="Waiting for Docs">Waiting for Docs</option>
 																	<option value="SOLIX PENDING">SOLIX PENDING</option>
 																	<option value="Pending Review">Pending Review</option>

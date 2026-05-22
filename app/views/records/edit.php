@@ -125,6 +125,9 @@
 															<option value="Docs Received" <?php if ($data['order_status'] == 'Docs Received') {
 																						echo 'selected="selected"';
 																					} ?>>Docs Received</option>
+															<option value="Sent Message" <?php if ($data['order_status'] == 'Sent Message') {
+																echo 'selected="selected"';
+															} ?>>Sent Message</option>
 															<option value="Waiting for Docs" <?php if ($data['order_status'] == 'Waiting for Docs') {
 																						echo 'selected="selected"';
 																					} ?>>Waiting for Docs</option>
