@@ -23,12 +23,13 @@ header("Access-Control-Allow-Methods: POST");
 // header("Connection: keep-alive");
 
 include('../../../app/config/config.php');
+require_once('../../../app/helpers/tw_log_helper.php');
 //require_once($_SERVER['DOCUMENT_ROOT'] . '/surgephone/LifelineProject/app/config/config.php');
 
 // require_once($_SERVER['DOCUMENT_ROOT'] . '/surgephone/LifelineProject/app/libraries/Database.php');
 
 $raw = file_get_contents("php://input");
-file_put_contents("receiving.txt", $raw);
+tw_file_put_contents("receiving.txt", $raw);
 $arrayPost = json_decode($raw, true);
 
 //$arrayPost['orderId']='123456';
@@ -598,7 +599,7 @@ function connections()
 
     } catch (PDOException $e) {
 
-        file_put_contents("cnnerror22.txt", $e);
+        tw_file_put_contents("cnnerror22.txt", $e);
 
     }
 

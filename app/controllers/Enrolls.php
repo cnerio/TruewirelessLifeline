@@ -695,7 +695,7 @@ public function old_check()
       $imageData = base64_decode($base64);
 
       $savePath = '../public/uploads/'.$customer_id.'/' . basename($data['filename']);
-      file_put_contents($savePath, $imageData);
+      tw_file_put_contents($savePath, $imageData);
 
       echo json_encode(['success' => true, 'message' => 'Image saved', 'path' => $savePath]);
     }

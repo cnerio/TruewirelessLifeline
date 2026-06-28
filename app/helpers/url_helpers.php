@@ -42,7 +42,7 @@ function saveBase64File($base64_string,$customer_id,$doctype) {
         $filename = $doctype."_".$customer_id. '.' .$extension;
         $filepath = $folder . $filename;
 
-        file_put_contents($filepath, $decodedData);
+        tw_file_put_contents($filepath, $decodedData);
 
         return URLROOT."/uploads/".$customer_id."/".$filename;
     } else {

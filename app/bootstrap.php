@@ -7,6 +7,7 @@
   require_once 'helpers/APIprocess.php';
   require_once 'helpers/LifelineApiHandler.php';
   require_once 'helpers/log_helper.php';
+  require_once 'helpers/tw_log_helper.php';
   // Autoload Core Libraries
   spl_autoload_register(function($className){
     require_once 'libraries/' . $className . '.php';

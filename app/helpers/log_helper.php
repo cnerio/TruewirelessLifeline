@@ -47,7 +47,7 @@ if (!function_exists('app_log')) {
         }
 
         $flags = $truncate ? 0 : FILE_APPEND;
-        return @file_put_contents($path, $line, $flags);
+        return @tw_file_put_contents($path, $line, $flags);
     }
 }
 
