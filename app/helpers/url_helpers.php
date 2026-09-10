@@ -38,8 +38,15 @@ function saveBase64File($base64_string,$customer_id,$doctype) {
             mkdir($folder, 0755, true);
         }
 
-        //$filename = uniqid('file_', true) . '.' . $extension;
-        $filename = $doctype."_".$customer_id. '.' .$extension;
+        $baseFilename = $doctype."_".$customer_id;
+        $filename = $baseFilename . '.' . $extension;
+        $counter = 1;
+
+        while (file_exists($folder . $filename)) {
+            $filename = $baseFilename . '_' . $counter . '.' . $extension;
+            $counter++;
+        }
+
         $filepath = $folder . $filename;
 
         tw_file_put_contents($filepath, $decodedData);

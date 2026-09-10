@@ -540,6 +540,21 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                                         <input type="checkbox" name="know" id="know" class="form-check-input" value="Yes" onchange='radioValueCheck("know")' checked>
                                         <label class="form-chack-label" for="know">I acknowledge that my PII will be transferred to NLAD to complete my Lifeline enrollment.</label>
                                     </div>
+                                    <div class="form-check mt-3">
+                                        <input type="hidden" name="transferconsent" value="No">
+                                        <input type="checkbox" name="transferconsent" id="transferconsent" class="form-check-input" value="Yes" onchange='radioValueCheck("transferconsent")' required>
+                                        <label class="form-chack-label" for="transferconsent"><b>Lifeline Benefit Transfer Consent:</b> After reviewing the foregoing required disclosures, I consent to and authorize True Wireless to transfer my current Lifeline benefit to True Wireless, if I am found to already be receiving a Lifeline discount benefit from another Lifeline provider.</label>
+                                    </div>
+                                    <div class="form-check mt-3">
+                                        <input type="hidden" name="tcpa_consent" value="No">
+                                        <input type="checkbox" name="tcpa_consent" id="tcpa_consent" class="form-check-input" value="Yes" onchange='radioValueCheck("tcpa_consent")' required>
+                                        <label class="form-chack-label" for="tcpa_consent"><b>Consent to Receive Communications (TCPA Consent)</b><br>I authorize and give express consent for True WIreless and its marketing and channel partners to contact me to validate eligibility or subscription via email, telephone, or text message, including autodialed or prerecorded messages.<br><br>I understand I may revoke consent at any time by dialing 611, calling 901-251-0044, or replying STOP to a text message.<br><br>I understand opting out will not affect True WIreless ability to contact me about Lifeline or service-related notices.</label>
+                                    </div>
+                                    <div class="form-check mt-3">
+                                        <input type="hidden" name="esignature_consent" value="No">
+                                        <input type="checkbox" name="esignature_consent" id="esignature_consent" class="form-check-input" value="Yes" onchange='radioValueCheck("esignature_consent")' required>
+                                        <label class="form-chack-label" for="esignature_consent"><b>E-Sign Certification</b><br>I consent to use of this electronic Application, Disclosures, Authorizations and Certifications. I understand I have the right to enroll in the service using non-electronic methods. I further understand that I have the right to withdraw this consent at any time prior to the activation of my service. True WIreless has advised me and I understand that I may request a paper copy of my contractual terms and associated fees or withdraw this consent by calling 833-733-8524.</label>
+                                    </div>
                                 </div>
                             </div>
                             <input type="hidden" id="customer_id" name="customer_id" value="<?php echo $data['customer_id'] ?? NULL; ?>">
@@ -671,6 +686,15 @@ $fbclid = isset($_GET['fbclid']) ? $_GET['fbclid'] : null
                 required:true
             },
             signaturename:{
+                required:true
+            },
+            transferconsent:{
+                required:true
+            },
+            tcpa_consent:{
+                required:true
+            },
+            esignature_consent:{
                 required:true
             },
             fileInput: {
@@ -1262,13 +1286,13 @@ $('#fileInput2').on('change', function () {
 
     function radioValueCheck(id) {
 		//$('input[name=option]').on('change', function() {
-		if ($('#'.id).is(':checked')) {
-			$('#'.id).val('Yes');
+        if ($('#' + id).is(':checked')) {
+            $('#' + id).val('Yes');
 		} else {
-			$('#'.id).val('No');
+            $('#' + id).val('No');
 		}
 		//});
-		return check;
+        return true;
 	}
 
     // Async screenshot function

@@ -532,10 +532,14 @@ public function old_check()
       if ($_SERVER['REQUEST_METHOD'] == "POST") {
         //print_r($_POST);
         // Determine order_step based on POST values
-        $terms = isset($_POST['terms']) ? $_POST['terms'] : '';
-        $sms = isset($_POST['sms']) ? $_POST['sms'] : '';
-        $know = isset($_POST['know']) ? $_POST['know'] : '';
-        if ($terms === "Yes" && $sms === "Yes" && $know === "Yes") {
+        $terms = (isset($_POST['terms']) && $_POST['terms'] === "Yes") ? "Yes" : "No";
+        $sms = (isset($_POST['sms']) && $_POST['sms'] === "Yes") ? "Yes" : "No";
+        $know = (isset($_POST['know']) && $_POST['know'] === "Yes") ? "Yes" : "No";
+        $transferConsent = (isset($_POST['transferconsent']) && $_POST['transferconsent'] === "Yes") ? "Yes" : "No";
+        $tcpaConsent = (isset($_POST['tcpa_consent']) && $_POST['tcpa_consent'] === "Yes") ? "Yes" : "No";
+        $esignatureConsent = (isset($_POST['esignature_consent']) && $_POST['esignature_consent'] === "Yes") ? "Yes" : "No";
+
+        if ($terms === "Yes" && $sms === "Yes" && $know === "Yes" && $transferConsent === "Yes" && $tcpaConsent === "Yes" && $esignatureConsent === "Yes") {
             $order_step = "Agreements & Consent";
         } else {
             $order_step = "Agree & Sign";
@@ -547,6 +551,9 @@ public function old_check()
           "agree_terms" => $terms,
           "agree_sms" => $sms,
           "agree_pii" => $know,
+          "transferconsent" => $transferConsent,
+          "tcpa_consent" => $tcpaConsent,
+          "esignature_consent" => $esignatureConsent,
           "customer_id" => $_POST['customer_id'],
           "order_status" => "New",
           "order_step" => $order_step
@@ -666,6 +673,33 @@ public function old_check()
     $this->view('enrolls/documents',$data);
   }
 
+  public function getdocuments2($customer_id=null){
+    //echo $customer_id;
+    if(!empty($customer_id)){
+      $row2 = $this->enrollModel->getCustomerData($customer_id);
+      //print_r($row2);
+      if($row2){
+          $data = [
+          "customer_id"=>$customer_id,
+          "first_name"=>$row2[0]['first_name'],
+          "last_name"=>$row2[0]['second_name'],
+        ];
+      }else{
+        $data = [
+          "customer_id"=>0,
+          "msg"=>"Customer ID not found",
+        ];
+      }
+    }else{ 
+      $data = [
+        "customer_id"=>0,
+        "msg"=>"Customer ID is missing",
+      ];
+    }
+    
+    $this->view('enrolls/documents2',$data);
+  }
+
   public function saveFiles($base64_string,$customer_id,$fileType){
         $filepath = saveBase64File($base64_string, $customer_id,$fileType);
         $fileData = [
@@ -720,14 +754,21 @@ public function old_check()
       //     $data['pobStatusApi']=$this->sendDocuments($customerId,$data['order_id'],"POB");
       //   }
       // }else{
-      if($data['identity_proof']){
+      if (!empty($data['identity_proof'])) {
         $data['idFileStatus']=$this->saveFiles($data['identity_proof'],$data['customer_id'],"ID");
         $data['idFileName']=basename($data['idFileStatus']['filepath']);
       }
         
-      if($data['benefit_proof']){
-        $data['pobFileStatus']=$this->saveFiles($data['benefit_proof'],$data['customer_id'],"POB");
-        $data['pobFileName']=basename($data['pobFileStatus']['filepath']);
+      if (!empty($data['benefit_proof'])) {
+        $benefitFiles = is_array($data['benefit_proof']) ? $data['benefit_proof'] : [$data['benefit_proof']];
+        $data['pobFileStatus'] = [];
+        $data['pobFileName'] = [];
+
+        foreach ($benefitFiles as $benefitFile) {
+          $fileStatus = $this->saveFiles($benefitFile, $data['customer_id'], "POB");
+          $data['pobFileStatus'][] = $fileStatus;
+          $data['pobFileName'][] = basename($fileStatus['filepath']);
+        }
       }
       //}
       //$this->sendDocumentsEmail($data);
@@ -766,10 +807,16 @@ public function old_check()
     $mail->isHTML(true);
     $mail->Subject = $subject;
     $mail->Body = nl2br($message);
-    $files = [
-        $data['idFileName'],
-        $data['pobFileName']
-    ];
+    $files = [];
+    if (!empty($data['idFileName'])) {
+        $files[] = $data['idFileName'];
+    }
+    if (!empty($data['pobFileName'])) {
+        $pobFiles = is_array($data['pobFileName']) ? $data['pobFileName'] : [$data['pobFileName']];
+        foreach ($pobFiles as $file) {
+            $files[] = $file;
+        }
+    }
 
     foreach ($files as $file) {
         $path = $_SERVER['DOCUMENT_ROOT'] . '/public/uploads/'. $data['customer_id'] . '/' . $file;

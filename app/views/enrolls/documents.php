@@ -39,19 +39,17 @@ require APPROOT . '/views/inc/navbar.php';
                 </p>
 
                 <form id="uploadForm">
-                    <!-- Proof of Identity -->
                     <div class="mb-3">
-                        <label for="identityProof" class="form-label">Proof of Identity</label>
-                        <input class="form-control" type="file" id="identityProof" accept=".jpg,.jpeg,.png,.pdf" capture="camera" required>
-                        <div class="form-text">Example: ID card, driver's license, passport.</div>
-                        <div id="identityPreview" class="mt-2"></div>
-                    </div>
-
-                    <!-- Proof of Benefit -->
-                    <div class="mb-3">
-                        <label for="benefitProof" class="form-label">Proof of Benefit</label>
-                        <input class="form-control" type="file" id="benefitProof" accept=".jpg,.jpeg,.png,.pdf"  capture="camera" required>
-                        <div class="form-text">Example: eligibility letter or benefit notice.</div>
+                        <label class="form-label">Proof of Benefit</label>
+                        <div id="benefitDropzone" class="border border-2 border-dashed rounded p-4 text-center bg-light" style="cursor: pointer; min-height: 180px; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                            <input type="file" id="benefitProof" accept=".jpg,.jpeg,.png,.pdf" capture="camera" multiple hidden>
+                            <div class="mb-2">
+                                <i class="fa fa-cloud-upload-alt fa-2x text-primary"></i>
+                            </div>
+                            <p class="mb-2 text-muted">Drag & drop files here or click to browse</p>
+                            <button type="button" class="btn btn-outline-primary btn-sm" id="benefitBrowseBtn">Choose files</button>
+                            <div class="form-text mt-2">Example: eligibility letter or benefit notice. You can upload more than one file.</div>
+                        </div>
                         <div id="benefitPreview" class="mt-2"></div>
                     </div>
 
@@ -80,173 +78,163 @@ require APPROOT . '/views/inc/navbar.php';
 <?php require APPROOT . '/views/inc/footer.php'; ?>
 
 <script>
-    let identityBase64 = '';
-    let benefitBase64 = '';
+    let benefitFiles = [];
+    let benefitBase64Map = {};
 
-    function previewAndConvert(inputId, previewId, setBase64Callback, clearBase64Callback) {
-    const input = document.getElementById(inputId);
-    const preview = document.getElementById(previewId);
+    function fileKey(file) {
+        return `${file.name}-${file.size}-${file.lastModified}`;
+    }
 
-    input.addEventListener('change', function () {
-        const file = input.files[0];
-        if (!file) return;
+    function convertFileToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
 
+            reader.onload = function (e) {
+                const src = e.target.result;
+
+                if (file.type.startsWith('image/')) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const MAX_WIDTH = 800;
+                        const scaleSize = MAX_WIDTH / img.width;
+
+                        canvas.width = MAX_WIDTH;
+                        canvas.height = img.height * scaleSize;
+
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+                        resolve(canvas.toDataURL('image/jpeg', 0.7));
+                    };
+                    img.src = src;
+                    return;
+                }
+
+                if (file.type === 'application/pdf') {
+                    resolve(src);
+                    return;
+                }
+
+                reject(new Error('Unsupported file type.'));
+            };
+
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    function appendBenefitFiles(newFiles) {
+        const seen = new Set(benefitFiles.map(fileKey));
+
+        newFiles.forEach((file) => {
+            const key = fileKey(file);
+            if (!seen.has(key)) {
+                benefitFiles.push(file);
+                seen.add(key);
+
+                convertFileToBase64(file)
+                    .then((base64) => {
+                        benefitBase64Map[key] = base64;
+                    })
+                    .catch(() => {
+                        benefitBase64Map[key] = null;
+                    });
+            }
+        });
+
+        renderBenefitFiles();
+    }
+
+    function renderBenefitFiles() {
+        const preview = document.getElementById('benefitPreview');
         preview.innerHTML = '';
 
-        const ftype = file.type;
-        if (ftype.startsWith('image/')) {
-            const img = new Image();
-            const reader = new FileReader();
+        if (!benefitFiles.length) {
+            return;
+        }
 
-            reader.onload = function (e) {
-                img.src = e.target.result;
+        benefitFiles.forEach((file) => {
+            const key = fileKey(file);
+            const item = document.createElement('div');
+            item.className = 'd-flex align-items-center justify-content-between border rounded p-2 mt-2';
+
+            const fileLabel = document.createElement('span');
+            fileLabel.textContent = file.name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-sm btn-outline-danger';
+            removeBtn.textContent = 'Remove';
+            removeBtn.onclick = () => {
+                benefitFiles = benefitFiles.filter((f) => fileKey(f) !== key);
+                delete benefitBase64Map[key];
+                renderBenefitFiles();
             };
 
-            img.onload = function () {
-                const canvas = document.createElement('canvas');
-                const MAX_WIDTH = 800;
-                const scaleSize = MAX_WIDTH / img.width;
+            item.appendChild(fileLabel);
+            item.appendChild(removeBtn);
+            preview.appendChild(item);
+        });
+    }
 
-                canvas.width = MAX_WIDTH;
-                canvas.height = img.height * scaleSize;
+    const benefitInput = document.getElementById('benefitProof');
+    const benefitDropzone = document.getElementById('benefitDropzone');
+    const benefitBrowseBtn = document.getElementById('benefitBrowseBtn');
 
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    benefitBrowseBtn.addEventListener('click', function () {
+        benefitInput.click();
+    });
 
-                // Compress the image to JPEG (you can change quality here)
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7); // 0.7 = 70% quality
-
-                // Send compressed base64 string
-                setBase64Callback(compressedBase64);
-
-                // Preview
-                const element = document.createElement('img');
-                element.classList.add('preview-img');
-                element.src = compressedBase64;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'Remove';
-                removeBtn.className = 'btn btn-sm btn-danger remove-btn';
-                removeBtn.type = 'button';
-                removeBtn.onclick = () => {
-                    input.value = '';
-                    preview.innerHTML = '';
-                    clearBase64Callback();
-                };
-
-                preview.appendChild(element);
-                preview.appendChild(removeBtn);
-            };
-
-            reader.readAsDataURL(file);
-        } else if (ftype === 'application/pdf') {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const base64String = e.target.result;
-                setBase64Callback(base64String);
-
-                const element = document.createElement('p');
-                element.textContent = `PDF selected: ${file.name}`;
-
-                const removeBtn = document.createElement('button');
-                removeBtn.textContent = 'Remove';
-                removeBtn.className = 'btn btn-sm btn-danger remove-btn';
-                removeBtn.type = 'button';
-                removeBtn.onclick = () => {
-                    input.value = '';
-                    preview.innerHTML = '';
-                    clearBase64Callback();
-                };
-
-                preview.appendChild(element);
-                preview.appendChild(removeBtn);
-            };
-            reader.readAsDataURL(file);
-        } else {
-            const element = document.createElement('p');
-            element.textContent = 'Unsupported file type.';
-            preview.appendChild(element);
+    benefitDropzone.addEventListener('click', function (event) {
+        if (event.target === benefitDropzone || event.target.closest('#benefitDropzone')) {
+            benefitInput.click();
         }
     });
-}
 
+    ['dragenter', 'dragover'].forEach(eventName => {
+        benefitDropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            benefitDropzone.classList.add('border-primary');
+        });
+    });
 
-    // function previewAndConvert(inputId, previewId, setBase64Callback, clearBase64Callback) {
-    //     const input = document.getElementById(inputId);
-    //     const preview = document.getElementById(previewId);
+    ['dragleave', 'drop'].forEach(eventName => {
+        benefitDropzone.addEventListener(eventName, function (e) {
+            e.preventDefault();
+            benefitDropzone.classList.remove('border-primary');
+        });
+    });
 
-    //     input.addEventListener('change', function() {
-    //         const file = input.files[0];
-    //         const ftype = input.files[0].type;
-    //         if (!file) return;
+    benefitDropzone.addEventListener('drop', function (e) {
+        const files = e.dataTransfer.files;
+        if (files && files.length) {
+            appendBenefitFiles(Array.from(files));
+        }
+    });
 
-    //         // Clear previous preview
-    //         preview.innerHTML = '';
+    benefitInput.addEventListener('change', function () {
+        if (this.files && this.files.length) {
+            appendBenefitFiles(Array.from(this.files));
+            this.value = '';
+        }
+    });
 
-    //         const reader = new FileReader();
-    //         reader.onload = function(e) {
-    //             const base64String = e.target.result;
-    //             setBase64Callback(base64String);
-
-    //             let element;
-    //             if (file.type.startsWith('image/')) {
-    //                 element = document.createElement('img');
-    //                 element.classList.add('preview-img');
-    //                 element.src = base64String;
-    //             } else if (file.type === 'application/pdf') {
-    //                 element = document.createElement('p');
-    //                 element.textContent = `PDF selected: ${file.name}`;
-    //             } else {
-    //                 element = document.createElement('p');
-    //                 element.textContent = 'Unsupported file type.';
-    //             }
-
-    //             const removeBtn = document.createElement('button');
-    //             removeBtn.textContent = 'Remove';
-    //             removeBtn.className = 'btn btn-sm btn-danger remove-btn';
-    //             removeBtn.type = 'button';
-    //             removeBtn.onclick = () => {
-    //                 input.value = '';
-    //                 preview.innerHTML = '';
-    //                 clearBase64Callback();
-    //             };
-
-    //             preview.appendChild(element);
-    //             preview.appendChild(removeBtn);
-    //         };
-            
-    //                 reader.readAsDataURL(file);
-            
-            
-    //     });
-    // }
-
-    // Setup listeners for both file inputs
-    previewAndConvert(
-        'identityProof',
-        'identityPreview',
-        b64 => identityBase64 = b64,
-        () => identityBase64 = ''
-    );
-    previewAndConvert(
-        'benefitProof',
-        'benefitPreview',
-        b64 => benefitBase64 = b64,
-        () => benefitBase64 = ''
-    );
-
-    // Handle form submission
     document.getElementById('uploadForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        if (!identityBase64 || !benefitBase64) {
-            alert("Please upload both required documents.");
+        const benefitPayload = benefitFiles
+            .map(file => benefitBase64Map[fileKey(file)])
+            .filter(Boolean);
+
+        if (benefitPayload.length === 0) {
+            alert("Please upload at least one benefit document.");
             return;
         }
 
         const data = {
-            identity_proof: identityBase64,
-            benefit_proof: benefitBase64,
+            identity_proof: '',
+            benefit_proof: benefitPayload,
             customer_id: $("#customer_id").val()
         };
 
@@ -261,7 +249,6 @@ require APPROOT . '/views/inc/navbar.php';
             .then(response => {
                 $("#uploadSection").hide();
                 $("#thankyou").show();
-                //document.getElementById('response2').textContent = response.message || 'Upload successful!';
             })
             .catch(err => {
                 console.error(err);
