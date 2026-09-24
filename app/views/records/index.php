@@ -94,6 +94,7 @@
 															<th width="68">Zipcode</th>
 															<th>Order ID</th>
 															<th>Order Status</th>
+															<th>Facility</th>
 															<th>Duplicated</th>
 															<th>Program Benefit</th>
 															<th>Created At</th>
@@ -132,6 +133,7 @@
 																	<option value="Missing Consents">Missing Consents</option>
 																</select>
 															</td>
+															<td><input id="facility" type="text" class="form-control grid-filter"></td>
 															<td>
 																<select id="duplicated" class="form-select grid-filter">
 																	<option value="">Please select</option>
@@ -243,39 +245,32 @@
 
 					var resultObj = JSON.parse(data);
 
-					if (resultObj.fields.lentgh < 1) {
+					if (resultObj.fields.length < 1) {
 						result.innerHTML = "NO RECORDS FOUND";
 					} else {
-
-
 						console.log(resultObj);
-						var row;
-						var cell, cell1, cell2, cell3, cell4, cell5, cell6, cell7, cell8, cell9, cell10, cell11, cell12, cell13, cell14, cell15, cell16;
-						var f, cnum;
 						var i = 0;
 						var c = 1;
 						$.each(resultObj.fields, function(k, v) {
-
-							//console.log(v);
-							//f = JSON.parse(v)
-							cnum = resultObj.offset + c;
-							row = result.insertRow(i);
-							cell = row.insertCell(0);
-							cell1 = row.insertCell(1);
-							cell2 = row.insertCell(2);
-							cell3 = row.insertCell(3);
-							cell4 = row.insertCell(4);
-							cell5 = row.insertCell(5);
-							cell6 = row.insertCell(6);
-							cell7 = row.insertCell(7);
-							cell8 = row.insertCell(8);
-							cell9 = row.insertCell(9);
-							cell10 = row.insertCell(10);
-							cell11 = row.insertCell(11);
-							cell12 = row.insertCell(12);
-							cell13 = row.insertCell(13);
-							cell14 = row.insertCell(14);
-							cell15 = row.insertCell(15);
+							var cnum = resultObj.offset + c;
+							var row = result.insertRow(i);
+							var cell = row.insertCell(0);
+							var cell1 = row.insertCell(1);
+							var cell2 = row.insertCell(2);
+							var cell3 = row.insertCell(3);
+							var cell4 = row.insertCell(4);
+							var cell5 = row.insertCell(5);
+							var cell6 = row.insertCell(6);
+							var cell7 = row.insertCell(7);
+							var cell8 = row.insertCell(8);
+							var cell9 = row.insertCell(9);
+							var cell10 = row.insertCell(10);
+							var cell11 = row.insertCell(11);
+							var cell12 = row.insertCell(12);
+							var cell13 = row.insertCell(13);
+							var cell14 = row.insertCell(14);
+							var cell15 = row.insertCell(15);
+							var cell16 = row.insertCell(16);
 
 							cell.innerHTML = cnum;
 							cell1.innerHTML = v.customer_id;
@@ -289,18 +284,15 @@
 							cell9.innerHTML = v.zipcode;
 							cell10.innerHTML = v.order_id;
 							cell11.innerHTML = v.order_status;
-							cell12.innerHTML = (v.duplicated === 'Y') ? 'Yes' : 'No';
-							cell13.innerHTML = getProgramName(v.program_benefit);
-							cell14.innerHTML = v.created_at;
-							cell15.innerHTML = '<div class="pull-right"><a href="'+urlroot+'/edit/' + v.customer_id + '" class="btn btn-outline-dark btn-sm" type="button"><i class="fa fa-pencil"></i>&nbsp;Edit</a></div>';
-							/*cell14.innerHTML = '<div class="pull-right"><button class="btn btn-outline-primary btn-sm modalView" type="button" style="margin-right: 10px;" data-idorder="'+v.id+'"><i class="fa fa-eye"></i>&nbsp;View</button><a href="https://secure-order-forms.com/surgephone/acp_landings/dashboard/records/edit/'+v.id+'" class="btn btn-outline-dark btn-sm" type="button"><i class="fa fa-pencil"></i>&nbsp;Edit</a></div>';
-							 */
+							cell12.innerHTML = v.facility || '-';
+							cell13.innerHTML = (v.duplicated === 'Y') ? 'Yes' : 'No';
+							cell14.innerHTML = getProgramName(v.program_benefit);
+							cell15.innerHTML = v.created_at;
+							cell16.innerHTML = '<div class="pull-right"><a href="'+urlroot+'/edit/' + v.customer_id + '" class="btn btn-outline-dark btn-sm" type="button"><i class="fa fa-pencil"></i>&nbsp;Edit</a></div>';
 
 							i++;
 							c++;
-						})
-
-						$("#toShow").html('<p>Showing ' + resultObj.offsetToShow + ' to ' + cnum + ' of ' + resultObj.numrows + '</p>');
+						});
 
 						$("#pagination").html(resultObj.pagination);
 					}
@@ -308,26 +300,20 @@
 					if (where != "") {
 
 						document.getElementById("customer_id").value = where[0];
-
 						document.getElementById("first_name").value = where[1];
-
 						document.getElementById("second_name").value = where[2];
-
 						document.getElementById("phone_number").value = where[3];
-
 						document.getElementById("email").value = where[4];
-
 						document.getElementById("dob").value = where[5];
-
 						document.getElementById("city").value = where[6];
-
 						document.getElementById("state").value = where[7];
 						document.getElementById("zipcode").value = where[8];
 						document.getElementById("order_id").value = where[9];
 						document.getElementById("order_status").value = where[10];
-						document.getElementById("duplicated").value = where[11];
-						document.getElementById("program_benefit").value = where[12];
-						document.getElementById("date_create").value = where[13];
+						document.getElementById("facility").value = where[11];
+						document.getElementById("duplicated").value = where[12];
+						document.getElementById("program_benefit").value = where[13];
+						document.getElementById("date_create").value = where[14];
 						//document.getElementById("agent").value = where[14];
 					}
 
@@ -350,6 +336,7 @@
 			var zipcode = $("#zipcode").val().trim();
 			var order_id = $("#order_id").val().trim();
 			var order_status = $("#order_status").val().trim();
+			var facility = $("#facility").val().trim();
 			var duplicated = $("#duplicated").val().trim();
 			var program_benefit = $("#program_benefit option:selected").val();
 			var created_at = $("#date_create").val().trim();
@@ -370,6 +357,7 @@
 				zipcode,
 				order_id,
 				order_status,
+				facility,
 				duplicated,
 				program_benefit,
 				created_at,
