@@ -274,6 +274,7 @@ public function old_check()
         "state" => strtoupper(trim($_POST['state'] ?? '')),
         "zipcode" => $_POST['zipcode'],
         "agent" => $_POST['agent'],
+        "facility" => $_POST['facility'],
         "URL" => $full_url,
         "utms"=>$utms,
         "phone_number" => null,

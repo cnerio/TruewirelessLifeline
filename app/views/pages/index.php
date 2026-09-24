@@ -227,6 +227,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     ?>
                     <input type="hidden" id="url" name="url" value="<?php echo htmlspecialchars($url_value, ENT_QUOTES, 'UTF-8'); ?>">
                     <input type="hidden" id="agent" name="agent" value="<?php echo $data['agent']; ?>">
+                    <input type="hidden" id="facility" name="facility" value="<?php echo isset($data['facility']) ? htmlspecialchars($data['facility'], ENT_QUOTES, 'UTF-8') : ''; ?>">
                     <!-- <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> -->
                     <button id="submitform" type="Submit" class="btn btn-primary" value="">Check</button>
                     <input type="hidden" id="powered" name="powered" value="">
@@ -349,7 +350,7 @@ $("#submitform").on("click",function(event){
     })
 
     // Lead pre-population from tk param
-    <?php if(!empty($data['lead'])): ?>
+    <?php if(!empty($data['lead']['email'])): ?>
     var leadData = {
         email:   "<?php echo $data['lead']['email']; ?>",
         zipcode: "<?php echo $data['lead']['zipcode']; ?>",
